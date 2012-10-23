@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<software>
+    <metadata>
+        <name>xrow GIS</name>
+        <version>1.1.0</version>
+        <copyright>Copyright (C) 1999-2012 xrow GmbH</copyright>
+        <license>GNU General Public License v3.0</license>
+        <info_url>http://projects.ez.no/gis</info_url>
+    </metadata>
+
+    <dependencies>
+        <requires>
+            <extension name="ezjscore" />
+        </requires>
+    </dependencies>
+</software>
