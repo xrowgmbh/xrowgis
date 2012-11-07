@@ -15,6 +15,7 @@
                 var controls,
                     map = new OpenLayers.Map({
                     div : "mapContainer",
+                    theme : "http://"+location.host+"/extension/xrowgis/design/standard/javascript/OpenLayers/theme/default/style.css",
                     displayProjection : new OpenLayers.Projection("EPSG:4326"),
                     units : "m",
                     maxResolution : 156543.0339,
