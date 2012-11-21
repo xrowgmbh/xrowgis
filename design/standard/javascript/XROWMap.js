@@ -21,8 +21,7 @@ XROWMap.prototype.init = function(element) {
     {
         this.zoom = this.layerzoom;
     }
-    
-    
+    OpenLayers.Layer.GML = OpenLayers.Class(OpenLayers.Layer.GML, {requestFailure:false});
     OpenLayers.ImgPath = "/extension/xrowgis/design/standard/javascript/OpenLayers/img/";
     OpenLayers.Request.DEFAULT_CONFIG.url = location.host;// change the url
                                                             // from

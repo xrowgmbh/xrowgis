@@ -11,59 +11,62 @@ class xrowGEORSS
     {
         $this->nodeID = $nodeID;
         self::generateGEORSSFeed();
+    
     }
 
     function generateGEORSSFeed()
     {
-        $treeNodes = self::fetchTreeNode();
         $parent = self::fetchParent();
-        $this->feed = new ezcFeed();
-        $this->point = new gPoint();
-        
-        $this->feed->generator = eZSys::serverURL();
-        $link = '/xrowgis/georssserver/' . $this->nodeID;
-        $this->feed->id = self::transformURI( null, true, 'full' );
-        $this->feed->title = $parent->attribute( 'name' );
-        $this->feed->link = eZSys::serverURL();
-        $this->feed->description = 'GEORSS Feed Channel';
-        $this->feed->language = eZLocale::currentLocaleCode();
-        $list = eZContentClass::fetchAllClasses();
-        
-        foreach ( $treeNodes as $node )
+        if ( $parent instanceof eZContentObject )
         {
-            $dm = $node->dataMap();
-            if ( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'has_content' ) && ( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude != 0 || $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude != 0 ) )
-            {
-                $item = $this->feed->add( 'item' );
-                $item->title = $node->getName();
-                $link = $node->attribute( 'url_alias' );
-                $item->link = self::transformURI( $link, true, 'full' );
-                $item->id = self::transformURI( $link, true, 'full' );
-                
-                if($node->classIdentifier() == 'article')
-                {
-                    $this->cache['cache'][$node->classIdentifier()]['text']='teaser_text';
-                }
-                
-                if ( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_type_string' ) == eZXMLTextType::DATA_TYPE_STRING )
-                {
-                    $outputHandler = new xrowRSSOutputHandler( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_text' ), false );
-                    $htmlContent = $outputHandler->outputText();
-                    $item->description = htmlspecialchars( trim( $htmlContent ) );
-                }
-                else
-                {
-                    $item->description = htmlspecialchars( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'content' ) );
-                }
-                $this->point->setLongLat( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude, $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude );
-                $this->point->convertLLtoTM();
-
-                ezcFeed::registerModule( 'GeoRss', 'ezcFeedGeoRssModule', 'georss' );
-                $module = $item->addModule( 'GeoRss' );
-                //$module->point = $attribute->attribute( 'content' )->latitude;
-                $module->lat = $this->point->utmNorthing;
-                $module->long = $this->point->utmEasting;
+            $treeNodes = self::fetchTreeNode();
+            $this->feed = new ezcFeed();
+            $this->point = new gPoint();
             
+            $this->feed->generator = eZSys::serverURL();
+            $link = '/xrowgis/georssserver/' . $this->nodeID;
+            $this->feed->id = self::transformURI( null, true, 'full' );
+            $this->feed->title = $parent->attribute( 'name' );
+            $this->feed->link = eZSys::serverURL();
+            $this->feed->description = 'GEORSS Feed Channel';
+            $this->feed->language = eZLocale::currentLocaleCode();
+            $list = eZContentClass::fetchAllClasses();
+            
+            foreach ( $treeNodes as $node )
+            {
+                $dm = $node->dataMap();
+                if ( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'has_content' ) && ( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude != 0 || $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude != 0 ) )
+                {
+                    $item = $this->feed->add( 'item' );
+                    $item->title = $node->getName();
+                    $link = $node->attribute( 'url_alias' );
+                    $item->link = self::transformURI( $link, true, 'full' );
+                    $item->id = self::transformURI( $link, true, 'full' );
+                    
+                    if ( $node->classIdentifier() == 'article' )
+                    {
+                        $this->cache['cache'][$node->classIdentifier()]['text'] = 'teaser_text';
+                    }
+                    
+                    if ( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_type_string' ) == eZXMLTextType::DATA_TYPE_STRING )
+                    {
+                        $outputHandler = new xrowRSSOutputHandler( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_text' ), false );
+                        $htmlContent = $outputHandler->outputText();
+                        $item->description = htmlspecialchars( trim( $htmlContent ) );
+                    }
+                    else
+                    {
+                        $item->description = htmlspecialchars( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'content' ) );
+                    }
+                    $this->point->setLongLat( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude, $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude );
+                    $this->point->convertLLtoTM();
+                    
+                    ezcFeed::registerModule( 'GeoRss', 'ezcFeedGeoRssModule', 'georss' );
+                    $module = $item->addModule( 'GeoRss' );
+                    //$module->point = $attribute->attribute( 'content' )->latitude;
+                    $module->lat = $this->point->utmNorthing;
+                    $module->long = $this->point->utmEasting;
+                }
             }
         }
         return $this->feed;
@@ -76,8 +79,6 @@ class xrowGEORSS
         $params['ClassFilterType'] = 'include';
         $params['ClassFilterArray'] = $this->cache['class_identifier'];
         #@TODO add custom filter to only select items with gis content
-        
-
         return eZContentObjectTreeNode::subTreeByNodeID( $params, $this->nodeID );
     }
 
