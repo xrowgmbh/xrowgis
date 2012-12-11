@@ -21,8 +21,8 @@ class xrowGISServerfunctions extends ezjscServerFunctions
         {
             if ( empty( $data['lat'] ) || empty( $data['lon'] ) )
             {
-                $lon = $data['data']['ContentObjectAttribute_xrowgis_longitude_' . $data['attr_id']];
-                $lat = $data['data']['ContentObjectAttribute_xrowgis_latitude_' . $data['attr_id']];
+                $lon = $data['data']['ContentObjectAttribute_xrowgis_longitude_' . $data['attributeID']];
+                $lat = $data['data']['ContentObjectAttribute_xrowgis_latitude_' . $data['attributeID']];
                 
                 $geocoder->setLonLat( $lon, $lat );
             
@@ -95,7 +95,7 @@ class xrowGISServerfunctions extends ezjscServerFunctions
         
         $data = $_POST;
         
-        $attributeID = $data['attr_id'];
+        $attributeID = $data['attributeID'];
         
         $geocoder = GeoCoder::getActiveGeoCoder();
         $geocoder->setLonLat( $data['lon'], $data['lat'] );
@@ -183,6 +183,7 @@ class xrowGISServerfunctions extends ezjscServerFunctions
         
         }
         $tpl->setVariable( 'attribute', $attribute );
+        $result['attributeID']= $attribute->attribute('id');
         $result['template'] = $tpl->fetch( 'design:xrowgis/xrowgis.tpl' );
         
         return $result;

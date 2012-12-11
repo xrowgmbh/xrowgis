@@ -48,7 +48,7 @@
     </table>
     </div>
     <div style="float: right;">
-        <div id="mapContainer" style="width: 200px; height: 200px;"></div>
+        <div id="mapContainer_{$attribute.id}" style="width: 200px; height: 200px;"></div>
     </div>
 {* map attribute values or define default values for lat and long *}
 {if and(not($attribute.content.latitude),not($attribute.content.longitude))}
@@ -62,7 +62,8 @@
 <script>
 {literal}
     var options = {
-        div:'mapContainer',
+        div:'{/literal}mapContainer_{$attribute.id}{literal}',
+        attributeID: '{/literal}{$attribute.id}{literal}',
         name:'{/literal}{ezini("GISSettings","Interface","xrowgis.ini")}{literal}',
         lat:'{/literal}{$latitude}{literal}',
         lon:'{/literal}{$longitude}{literal}',
