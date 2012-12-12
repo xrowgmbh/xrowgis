@@ -27,7 +27,7 @@ XROWMap.prototype.init = function(element) {
                                                             // from
                                                             // window.location.href
                                                             // to location .host
-    
+
     // fix for elements which are not visibly at first, for e.g. maps which are
     // hidden in tabs
     if(typeof(this.mapOptions.mapview.height)=='undefined')
@@ -97,7 +97,6 @@ XROWMap.prototype.init = function(element) {
         }
         map.addLayer(this.layer);
     });
-    
     this.map.featureLayers = featureLayers;
     this.map = map;// @TODO: Why do we have to do it this way?!
     
@@ -120,13 +119,6 @@ XROWMap.prototype.init = function(element) {
     this.lonLat = new OpenLayers.LonLat(this.lonLat.x, this.lonLat.y);
     this.map.addLayer(this.markers);
     this.markers.addMarker(new OpenLayers.Marker(this.lonLat, this.icon));
-    
-    /*REFERENZVECTOR
-    var vectors = new OpenLayers.Layer.Vector("Vector Layer");
-    var point = new OpenLayers.Geometry.Point(this.lonLat.lon, this.lonLat.lat);
-    vectors.addFeatures([new OpenLayers.Feature.Vector(point)]);
-    this.map.addLayer(vectors);
-    */
 
     // set center
     this.map.setCenter(this.lonLat, this.zoom);
@@ -171,6 +163,9 @@ $(document).ready(function() {
         switch ($(this).data().maptype) {
             case 'POIMap':
                 map = new POIMap();
+                break;
+            case 'ROUTEMap':
+                map = new ROUTEMap();
                 break;
             default:
                 map = new XROWMap();
