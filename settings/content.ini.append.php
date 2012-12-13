@@ -3,6 +3,7 @@
 [DataTypeSettings]
 ExtensionDirectories[]=xrowgis
 AvailableDataTypes[]=xrowgis
+AvailableDataTypes[]=xrowgpx
 
 [CustomTagSettings]
 # You can use custom tags through the <custom> tag in XML fields.

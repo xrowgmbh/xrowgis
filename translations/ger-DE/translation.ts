@@ -128,6 +128,12 @@
         <translation>Geoinformationssystem</translation>
     </message>
     <message>
+        <location filename="xrowgpxtype.php" line="26"/>
+        <source>GPX Text block</source>
+        <comment>Datatype name</comment>
+        <translation>GPX Eingabefeld</translation>
+    </message>
+    <message>
         <location filename="xrowgistype.php" line="80"/>
         <source>Latitude is no floating point figure.</source>
         <translation>Breitengrad ist keine Kommazahl.</translation>

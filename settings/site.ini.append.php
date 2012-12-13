@@ -8,9 +8,11 @@ ExtensionAutoloadPath[]=xrowgis
 
 [SiteAccessSettings]
 AnonymousAccessList[]=xrowgis/georss
+AnonymousAccessList[]=xrowgis/gpxdownload
 
 [RoleSettings]
 PolicyOmitList[]=xrowgis/georss
+PolicyOmitList[]=xrowgis/gpxdownload
 
 [RSSSettings]
 AvailableVersionList[]=GEORSS 2.0
