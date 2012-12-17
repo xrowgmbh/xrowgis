@@ -4,7 +4,7 @@ XROWMap.prototype.start = function(element) {
     this.init(element);
 }
 XROWMap.prototype.init = function(element) {
-    var map, options={}, controlOptions, layersettings={}, tmp, featureLayers=[], params_new, x=0;
+    var map, options={}, controlOptions, layersettings={}, tmp, featureLayers=[], GPXLayers=[], params_new, x=0;
     this.map, this.layer, this.styledPoint, this.lonLat, this.markers, this.params={}, this.layerOptions={};
     this.options = $.data(element);
     this.config = $('.'+this.options.config);
@@ -12,7 +12,7 @@ XROWMap.prototype.init = function(element) {
     this.projection = $(this.config).find('.baseLayer').data().projection;
     this.layerzoom = $(this.config).find('.baseLayer').data().layerzoom;
     Proj4js.defs["EPSG:25832"] = "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs";
-    
+
     if(typeof(this.layerzoom) == 'undefined')
     {
         this.zoom = this.mapOptions.mapview.zoom;
@@ -60,6 +60,7 @@ XROWMap.prototype.init = function(element) {
                     }
                 });
     // set additional MapOptions
+
     if(typeof(this.mapOptions.mapoptions)!='undefined')
     {
         for(var i in this.mapOptions.mapoptions)
@@ -72,11 +73,12 @@ XROWMap.prototype.init = function(element) {
     map = this.map;
     $(this.config).find('li').each(function(index, value)
     {
-        eval("this.layer = new OpenLayers.Layer." + $(this).data().service + "('"+ $(this).data().layername +"', '"+ $(this).data().url +"', " + stringify($(this).data().layerparams) + ", "+ stringify($(this).data().layeroptions) +");");
-
+        eval("this.layer = new OpenLayers.Layer." + $(this).data().service + "('" + $(this).data().layername + "', '" + $(this).data().url + "', " + stringify($(this).data().layerparams) + ", " + stringify($(this).data().layeroptions) + ");");
+        
         if(typeof($(this).data().layersettings)!='undefined')
         {
             tmp = $(this).data().layersettings;
+            
             for(var i in tmp)
             {
                 layersettings[i] = eval(tmp[i]);
@@ -95,10 +97,22 @@ XROWMap.prototype.init = function(element) {
             }
             ++x;
         }
+        if(typeof($(this).data().gpx) != 'undefined')
+        {   
+            GPXLayers[x] = 
+            {
+                    'layerName' : $(this).data().layername,
+                    'url' : $(this).data().routeparams.url,
+                    'style' : $(this).data().routeparams.style,
+                    'layer' : this.layer
+            }
+            ++x;
+        }
         map.addLayer(this.layer);
     });
     this.map.featureLayers = featureLayers;
-    this.map = map;// @TODO: Why do we have to do it this way?!
+    this.map.GPXLayers = GPXLayers;
+    this.map = map;
     
     //ie 8 hack -> Bug #3182
     this.map.Z_INDEX_BASE.Control=980;
@@ -110,7 +124,6 @@ XROWMap.prototype.init = function(element) {
     this.yoffset = (Number(this.mapOptions.icon.yoffset));
     this.offset = new OpenLayers.Pixel(this.xoffset, this.yoffset);
     this.icon = new OpenLayers.Icon(this.mapOptions.icon.src, this.size, this.offset);
-//    this.icon = new OpenLayers.Icon("http://www.openstreetmap.org/openlayers/img/marker.png",new OpenLayers.Size(15, 15));
 
     // add simple Marker and reproject the coords
     this.markers = new OpenLayers.Layer.Markers("Marker Layer");

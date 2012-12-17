@@ -6,7 +6,7 @@ POIMap.prototype.constructor = POIMap;
 
 POIMap.prototype.start = function(element) {
     this.init(element);//init parent Map
-    this.parentMap = this.map;//we want to render the parent Map, if there is no return value from gml
+//    this.parentMap = this.map;//we want to render the parent Map, if there is no return value from gml
     this.markerLayer;
     this.popup;
     this.layerURL=[];
@@ -180,7 +180,6 @@ function popupDestroy(e) {
 function initiate_geolocation() {
     navigator.geolocation.getCurrentPosition(handle_geolocation_query);  
 }  
-
 
 //@TODO Make it more generic...avoid hardcoded icon path 
 function handle_geolocation_query(position){

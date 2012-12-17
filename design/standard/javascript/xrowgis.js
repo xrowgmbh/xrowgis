@@ -22,7 +22,7 @@
                     maxExtent : new OpenLayers.Bounds(-20037508, -20037508,
                             20037508, 20037508.34)
                 });
-                console.log(options)
+
             var styledPoint = new OpenLayers.StyleMap({
                 "default" : new OpenLayers.Style({
                     pointRadius : "13",

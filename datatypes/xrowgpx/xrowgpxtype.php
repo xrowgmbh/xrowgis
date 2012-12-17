@@ -51,16 +51,16 @@ class xrowGPXType extends eZTextType
                     return eZInputValidator::STATE_INVALID;
                 }
             }
-            /*else
+            else
             {
-                $xml = new DOMDocument();
-                $xml->load( $data );
-                if ( ! $xml->schemaValidate( 'extension/xrowgis/schemas/gpx_schema.xsd' ) )
+                $dom = new DOMDocument();
+                $dom->loadXML( $data );
+                if ( ! $dom->schemaValidate( 'extension/xrowgis/schemas/gpx_schema.xsd' ) )
                 {
                     $contentObjectAttribute->setValidationError( ezpI18n::tr( 'kernel/classes/datatypes', 'GPX Track seems to be malformed.' ) );
                     return eZInputValidator::STATE_INVALID;
                 }
-            }*/
+            }
         }
         else 
             if ( ! $classAttribute->attribute( 'is_information_collector' ) and $contentObjectAttribute->validateIsRequired() )
