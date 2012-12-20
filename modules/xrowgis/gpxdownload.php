@@ -13,7 +13,7 @@ if ( $contentObject instanceof eZContentObject && $contentObject->canRead() )
 {
     foreach ( $contentObject->dataMap() as $coattribute )
     {
-        if ( $coattribute->attribute( 'data_type_string' ) == xrowGPXtype::DATA_TYPE_STRING )
+        if ( $coattribute->attribute( 'data_type_string' ) == xrowGPXType::DATA_TYPE_STRING )
         {
             $xml = $coattribute->attribute( 'data_text' );
             $file = $contentObject->attribute( 'name' ) . '.gpx';
