@@ -28,8 +28,8 @@ XROWMap.prototype.init = function(element) {
                                                             // window.location.href
                                                             // to location .host
 
-    // fix for elements which are not visibly at first, for e.g. maps which are
-    // hidden in tabs
+    // fix for elements which are not visibly at first, for e.g. maps which are hidden in tabs
+    
     if(typeof(this.mapOptions.mapview.height)=='undefined')
     {
         if ($(element).height() == 0) 
@@ -59,21 +59,42 @@ XROWMap.prototype.init = function(element) {
                         "zoomend": zoomEnd
                     }
                 });
-    // set additional MapOptions
-
+    // set additional MapOptions.mapoptins
     if(typeof(this.mapOptions.mapoptions)!='undefined')
     {
         for(var i in this.mapOptions.mapoptions)
         {
             options[i] = eval(this.mapOptions.mapoptions[i]);
         }
+        
         this.map.setOptions(options);
     }
     // create Layers
     map = this.map;
+    
     $(this.config).find('li').each(function(index, value)
     {
-        eval("this.layer = new OpenLayers.Layer." + $(this).data().service + "('" + $(this).data().layername + "', '" + $(this).data().url + "', " + stringify($(this).data().layerparams) + ", " + stringify($(this).data().layeroptions) + ");");
+        if($(this).data().service == 'Vector')
+        {
+            eval("this.layer = new OpenLayers.Layer." + $(this).data().service + "('" + $(this).data().layername + "', " + stringify($(this).data().layeroptions) + ");");
+            switch($(this).data().vectortype)
+            {
+                case 'gpx':
+                    this.layer.addOptions({
+//                        strategies : [new OpenLayers.Strategy.Fixed()], 
+                        protocol : new OpenLayers.Protocol.HTTP({
+                            url: $(this).data().routeparams.url, 
+                            format: new OpenLayers.Format.GPX()
+                        }), 
+                            style : $(this).data().routeparams.style
+                     });
+            }
+//            this.layer.strategies = [new OpenLayers.Strategy.Fixed()];
+        }
+        else
+        {
+            eval("this.layer = new OpenLayers.Layer." + $(this).data().service + "('" + $(this).data().layername + "', '" + $(this).data().url + "', " + stringify($(this).data().layerparams) + ", " + stringify($(this).data().layeroptions) + ");");
+        }
         
         if(typeof($(this).data().layersettings)!='undefined')
         {
@@ -97,23 +118,11 @@ XROWMap.prototype.init = function(element) {
             }
             ++x;
         }
-        if(typeof($(this).data().gpx) != 'undefined')
-        {   
-            GPXLayers[x] = 
-            {
-                    'layerName' : $(this).data().layername,
-                    'url' : $(this).data().routeparams.url,
-                    'style' : $(this).data().routeparams.style,
-                    'layer' : this.layer
-            }
-            ++x;
-        }
         map.addLayer(this.layer);
     });
     this.map.featureLayers = featureLayers;
-    this.map.GPXLayers = GPXLayers;
     this.map = map;
-    
+
     //ie 8 hack -> Bug #3182
     this.map.Z_INDEX_BASE.Control=980;
     this.map.eventsDiv.style.zIndex = this.map.Z_INDEX_BASE.Control - 1;
