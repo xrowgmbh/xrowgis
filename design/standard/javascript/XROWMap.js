@@ -4,7 +4,7 @@ XROWMap.prototype.start = function(element) {
     this.init(element);
 }
 XROWMap.prototype.init = function(element) {
-    var map, options={}, controlOptions, layersettings={}, tmp, featureLayers=[], GPXLayers=[], params_new, x=0;
+    var map, options={}, controlOptions, layersettings={}, tmp, featureLayers=[], GPXLayers=[], x=0, y=0;
     this.map, this.layer, this.styledPoint, this.lonLat, this.markers, this.params={}, this.layerOptions={};
     this.options = $.data(element);
     this.config = $('.'+this.options.config);
@@ -69,31 +69,48 @@ XROWMap.prototype.init = function(element) {
         
         this.map.setOptions(options);
     }
+
     // create Layers
     map = this.map;
-    
+    var that = this;
     $(this.config).find('li').each(function(index, value)
     {
         if($(this).data().service == 'Vector')
         {
-            eval("this.layer = new OpenLayers.Layer." + $(this).data().service + "('" + $(this).data().layername + "', " + stringify($(this).data().layeroptions) + ");");
             switch($(this).data().vectortype)
             {
                 case 'gpx':
-                    this.layer.addOptions({
-//                        strategies : [new OpenLayers.Strategy.Fixed()], 
-                        protocol : new OpenLayers.Protocol.HTTP({
-                            url: $(this).data().routeparams.url, 
+                    // Add the Layer with the GPX Tracks
+                    this.layer = new OpenLayers.Layer.Vector( $(this).data().layername , {
+                        isBaseLayer: $(this).data().layeroptions.isBaseLayer,
+                        visibility: $(this).data().layeroptions.visibility,
+                        strategies: [new OpenLayers.Strategy.Fixed()],
+                        protocol: new OpenLayers.Protocol.HTTP({
+                            url: $(this).data().routeparams.url,
                             format: new OpenLayers.Format.GPX()
-                        }), 
-                            style : $(this).data().routeparams.style
-                     });
+                        }),
+                        style: $(this).data().routeparams.style,
+                        projection: new OpenLayers.Projection("EPSG:4326")
+                    });
+                    GPXLayers[y] = 
+                    {
+                            'layer' : this.layer,
+                            'start' : $(this).data().routeparams.start,
+                            'end' : $(this).data().routeparams.end
+                    }
+                    ++y;
+                    break;
             }
-//            this.layer.strategies = [new OpenLayers.Strategy.Fixed()];
         }
         else
         {
             eval("this.layer = new OpenLayers.Layer." + $(this).data().service + "('" + $(this).data().layername + "', '" + $(this).data().url + "', " + stringify($(this).data().layerparams) + ", " + stringify($(this).data().layeroptions) + ");");
+        }
+        //some layers need a special treatment - place it here if needed
+        switch($(this).data().service)
+        {
+            case 'GML':
+                this.layer.setVisibility(false);
         }
         
         if(typeof($(this).data().layersettings)!='undefined')
@@ -118,22 +135,24 @@ XROWMap.prototype.init = function(element) {
             }
             ++x;
         }
+
         map.addLayer(this.layer);
     });
     this.map.featureLayers = featureLayers;
+    this.map.GPXLayers = GPXLayers;
     this.map = map;
 
     //ie 8 hack -> Bug #3182
     this.map.Z_INDEX_BASE.Control=980;
     this.map.eventsDiv.style.zIndex = this.map.Z_INDEX_BASE.Control - 1;
-    
+
     // defining Icon stuff for gml Layer and marker Layer
     this.size = new OpenLayers.Size(this.mapOptions.icon.width, this.mapOptions.icon.height);
     this.xoffset = (Number(this.mapOptions.icon.xoffset));
     this.yoffset = (Number(this.mapOptions.icon.yoffset));
     this.offset = new OpenLayers.Pixel(this.xoffset, this.yoffset);
     this.icon = new OpenLayers.Icon(this.mapOptions.icon.src, this.size, this.offset);
-
+    
     // add simple Marker and reproject the coords
     this.markers = new OpenLayers.Layer.Markers("Marker Layer");
     this.lonLat = new Proj4js.Point(this.options.lon, this.options.lat);
@@ -195,6 +214,7 @@ $(document).ready(function() {
             }
         map.start($(this)[0]);
     });// ende each
+    
     $("input.map-search").click(function()
             {
                 jQuery.ez('xrowGIS_page::updateMap',{'input': $("input.global-map-search").val(), 'mapsearch' : true},
@@ -213,7 +233,7 @@ $(document).ready(function() {
             });
     $(".click-list li :checkbox").click(function()
         {
-            if($(this)[0].parentNode.layer.visibility===true && $(this)[0].parentNode.layer.isBaseLayer =='false')
+            if($(this)[0].parentNode.layer.visibility===true && ($(this)[0].parentNode.layer.isBaseLayer===false || $(this)[0].parentNode.layer.isBaseLayer=='false'))
             {
                 $(this)[0].parentNode.layer.setVisibility(false);
             }else

@@ -13,8 +13,7 @@ POIMap.prototype.start = function(element) {
     this.layerURL=[];
 
     if (this.options.url != "false" || typeof(this.map.featureLayers) != 'undefined') {//if we have no url, render the default map
-        
-//        this.markers.destroy();//destroy Parent Marker
+
         this.markers.removeMarker(this.markers.markers[0]);// destroy Parent Marker
         for(var i in this.map.featureLayers)
         {
@@ -112,7 +111,7 @@ POIMap.prototype.start = function(element) {
             OpenLayers.Event.stop(e);
         });
     }
-    this.map.render(element);
+//    this.map.render(element);
 }
 
 //all this stuff underneath here comes to MapUtils.js...later.

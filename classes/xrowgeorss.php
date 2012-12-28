@@ -11,7 +11,6 @@ class xrowGEORSS
     {
         $this->nodeID = $nodeID;
         self::generateGEORSSFeed();
-    
     }
 
     function generateGEORSSFeed()
@@ -24,7 +23,7 @@ class xrowGEORSS
             $this->point = new gPoint();
             
             $this->feed->generator = eZSys::serverURL();
-            $link = '/xrowgis/georssserver/' . $this->nodeID;
+            $link = '/xrowgis/georss/' . $this->nodeID;
             $this->feed->id = self::transformURI( null, true, 'full' );
             $this->feed->title = $parent->attribute( 'name' );
             $this->feed->link = eZSys::serverURL();
@@ -63,7 +62,7 @@ class xrowGEORSS
                     
                     ezcFeed::registerModule( 'GeoRss', 'ezcFeedGeoRssModule', 'georss' );
                     $module = $item->addModule( 'GeoRss' );
-                    //$module->point = $attribute->attribute( 'content' )->latitude;
+                    
                     $module->lat = $this->point->utmNorthing;
                     $module->long = $this->point->utmEasting;
                 }
