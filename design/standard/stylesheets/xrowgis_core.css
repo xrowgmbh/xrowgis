@@ -1,4 +1,9 @@
-.custom_map
-{
-	width: 100%;
+.custom_map {
+    width: 100%;
+}
+
+.popup-image {
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 10px;
 }

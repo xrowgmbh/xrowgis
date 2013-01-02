@@ -41,7 +41,7 @@ ROUTEMap.prototype.start = function(element) {
                 endFeature = new OpenLayers.Feature.Vector(endLonLat);
                 endFeature.style = styledPoint;
 
-                this.map.GPXLayers[i].layer.addFeatures([startFeature, endFeature]);
+//                this.map.GPXLayers[i].layer.addFeatures([startFeature, endFeature]);
             }
         }
     }

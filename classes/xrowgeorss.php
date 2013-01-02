@@ -29,7 +29,6 @@ class xrowGEORSS
             $this->feed->link = eZSys::serverURL();
             $this->feed->description = 'GEORSS Feed Channel';
             $this->feed->language = eZLocale::currentLocaleCode();
-            $list = eZContentClass::fetchAllClasses();
             
             foreach ( $treeNodes as $node )
             {
@@ -42,21 +41,59 @@ class xrowGEORSS
                     $item->link = self::transformURI( $link, true, 'full' );
                     $item->id = self::transformURI( $link, true, 'full' );
                     
-                    if ( $node->classIdentifier() == 'article' )
+                    if ( $dm[$this->cache['cache'][$node->classIdentifier()]['default']]->attribute( 'has_content' ) )
                     {
-                        $this->cache['cache'][$node->classIdentifier()]['text'] = 'teaser_text';
+                        $this->cache['cache'][$node->classIdentifier()]['text'] = $this->cache['cache'][$node->classIdentifier()]['default'];
+                    }
+                    else
+                    {
+                        if ( ! empty( $this->cache['cache'][$node->classIdentifier()]['alternative'] ) )
+                        {
+                            $this->cache['cache'][$node->classIdentifier()]['text'] = $this->cache['cache'][$node->classIdentifier()]['alternative'];
+                        }
+                        else
+                        {
+                            $this->cache['cache'][$node->classIdentifier()]['text'] = $this->cache['cache'][$node->classIdentifier()]['default'];
+                        }
                     }
                     
+                    if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'has_content' ) )
+                    {
+                        $content = $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'content' );
+                        
+                        if ( ( $imageObject = eZContentObject::fetch( $content['relation_list'][0]['contentobject_id'] ) ) instanceof eZContentObject && $imageObject->canRead() )
+                        {
+                            $imageObject = $imageObject->dataMap();
+                            foreach ( $imageObject as $coAttribute )
+                            {
+                                if ( $coAttribute->attribute( 'data_type_string' ) == eZImageType::DATA_TYPE_STRING )
+                                {
+                                    if ( $coAttribute->content()->attribute( 'is_valid' ) )
+                                    {
+                                        $content = $coAttribute->content();
+                                        if ( ! empty( $this->cache['cache'][$node->classIdentifier()]['imageAlias'] ) || $this->cache['cache'][$node->classIdentifier()]['image'] != 'original' )
+                                        {
+                                            $prefix = "_{$this->cache['cache'][$node->classIdentifier()]['imageAlias']}";
+                                            $content->imageAlias( $this->cache['cache'][$node->classIdentifier()]['imageAlias'] );
+                                        }
+                                        $image = eZSys::instance()->serverURL().'/'.$content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["dirpath"].'/'.$content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["basename"].$prefix.'.'.$content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["suffix"];
+                                        $item->description = '<image class="'.$this->cache['cache'][$node->classIdentifier()]['imageStyle'].'" alt="' . $coAttribute->content()->attribute( 'alternative_text' ) . '" src="' . $image . '">';
+                                    }
+                                }
+                            }
+                        }
+                    }
                     if ( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_type_string' ) == eZXMLTextType::DATA_TYPE_STRING )
                     {
                         $outputHandler = new xrowRSSOutputHandler( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_text' ), false );
                         $htmlContent = $outputHandler->outputText();
-                        $item->description = htmlspecialchars( trim( $htmlContent ) );
+                        $item->description .= htmlspecialchars( trim( $htmlContent ) );
                     }
                     else
                     {
-                        $item->description = htmlspecialchars( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'content' ) );
+                        $item->description .= htmlspecialchars( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'content' ) );
                     }
+
                     $this->point->setLongLat( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude, $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude );
                     $this->point->convertLLtoTM();
                     
@@ -93,13 +130,20 @@ class xrowGEORSS
         
         $results = $db->arrayQuery( $sql );
         $retVal = array();
+        $gisini = eZINI::instance( "xrowgis.ini" );
+        $defaultIdentifier = $gisini->variable( "GeoRSSAttributes", "AttributeIdentifier" );
+        $alternativeIdentifier = $gisini->variable( "GeoRSSAttributes", "AlternativeIdentifier" );
+        $imageIdentifier = $gisini->variable( "GeoRSSImage", "ImageIdentifier" );
+        $imageAlias = $gisini->variable( "GeoRSSImage", "ImageAlias" );
+        $imageStyle = $gisini->variable( "GeoRSSImage", "ImageStyle" );
         
         foreach ( $results as $key => $result )
         {
-            $sql = "SELECT identifier FROM `ezcontentclass_attribute` WHERE (data_type_string = '" . eZXMLTextType::DATA_TYPE_STRING . "' OR data_type_string = '" . eZTextType::DATA_TYPE_STRING . "') AND contentclass_id = '" . $results[$key]['contentclass_id'] . "' ORDER BY data_type_string DESC";
-            $res = $db->arrayQuery( $sql );
-            $retVal['class_identifier'][] = $results[$key]['identifier'];
-            $retVal['cache'][$results[$key]['identifier']]['text'] = $res[0]['identifier'];
+            $retVal['cache'][$results[$key]['identifier']]['default'] = $defaultIdentifier[$results[$key]['identifier']];
+            $retVal['cache'][$results[$key]['identifier']]['alternative'] = $alternativeIdentifier[$results[$key]['identifier']];
+            $retVal['cache'][$results[$key]['identifier']]['image'] = $imageIdentifier[$results[$key]['identifier']];
+            $retVal['cache'][$results[$key]['identifier']]['imageAlias'] = $imageAlias;
+            $retVal['cache'][$results[$key]['identifier']]['imageStyle'] = $imageStyle;
             
             $sql = "SELECT identifier FROM `ezcontentclass_attribute` WHERE data_type_string = '" . xrowGIStype::DATATYPE_STRING . "'  AND contentclass_id = '" . $results[$key]['contentclass_id'] . "'";
             $res = $db->arrayQuery( $sql );

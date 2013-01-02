@@ -236,9 +236,13 @@ $(document).ready(function() {
             if($(this)[0].parentNode.layer.visibility===true && ($(this)[0].parentNode.layer.isBaseLayer===false || $(this)[0].parentNode.layer.isBaseLayer=='false'))
             {
                 $(this)[0].parentNode.layer.setVisibility(false);
+//                $(this)[0].parentNode.layer.visibility = false;
+//                $(this)[0].parentNode.layer.redraw();
             }else
             {
                 $(this)[0].parentNode.layer.setVisibility(true);
+//                $(this)[0].parentNode.layer.visibility = true;
+//                $(this)[0].parentNode.layer.redraw();
             }
         });
     $(".click-list input[type=checkbox]").each(

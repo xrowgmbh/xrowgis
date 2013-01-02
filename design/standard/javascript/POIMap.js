@@ -46,7 +46,6 @@ POIMap.prototype.start = function(element) {
                                 {
                                     description = "<p>" + feature.attributes.description + "</p><br />";
                                 }
-                                
                                 if (typeof this.popup != "undefined" && this.popup != null) {
                                     this.map.removePopup(this.popup);
                                 }
@@ -54,7 +53,7 @@ POIMap.prototype.start = function(element) {
                                         this.featureLonLat,
                                         new OpenLayers.Size(200, 200), 
                                         "<h2>" + feature.attributes.title + "</h2>" 
-                                            + description  +
+                                            + description  + 
                                         "<a href='" + feature.attributes.link + "' target='_blank'>mehr...</a>",
                                         null, 
                                         false);
@@ -111,7 +110,7 @@ POIMap.prototype.start = function(element) {
             OpenLayers.Event.stop(e);
         });
     }
-//    this.map.render(element);
+    this.map.render(element);
 }
 
 //all this stuff underneath here comes to MapUtils.js...later.
