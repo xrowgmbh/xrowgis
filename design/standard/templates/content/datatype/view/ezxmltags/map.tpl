@@ -54,7 +54,7 @@
                             data-projection='{}'
                             data-layersettings='{}'
                             data-layerparams='{"tiled" : true}'
-                            data-layeroptions='{"isBaseLayer" : false}'
+                            data-layeroptions='{"isBaseLayer" : false, "visibility" : true}'
                             data-features='{"featureType" : "GeoRSS"}'
                             data-default="active" 
                             data-layername="GeoRSS" >GeoRSS</li>

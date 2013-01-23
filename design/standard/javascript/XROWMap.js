@@ -4,15 +4,21 @@ XROWMap.prototype.start = function(element) {
     this.init(element);
 }
 XROWMap.prototype.init = function(element) {
-    var map, options={}, controlOptions, layersettings={}, tmp, featureLayers=[], GPXLayers=[], x=0, y=0;
+    var map, options={}, controlOptions, layersettings={}, tmp, featureLayers=[], GPXLayers=[], x=0, y=0, that;
     this.map, this.layer, this.styledPoint, this.lonLat, this.markers, this.params={}, this.layerOptions={};
     this.options = $.data(element);
     this.config = $('.'+this.options.config);
     this.mapOptions=this.config.data('mapoptions');
     this.projection = $(this.config).find('.baseLayer').data().projection;
     this.layerzoom = $(this.config).find('.baseLayer').data().layerzoom;
+    
     Proj4js.defs["EPSG:25832"] = "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs";
-
+    OpenLayers.Layer.GML = OpenLayers.Class(OpenLayers.Layer.GML, {requestFailure:false});
+    OpenLayers.ImgPath = "/extension/xrowgis/design/standard/javascript/OpenLayers/img/";
+    OpenLayers.Request.DEFAULT_CONFIG.url = location.host;// change the url
+                                                            // from
+                                                            // window.location.href
+                                                            // to location .host
     if(typeof(this.layerzoom) == 'undefined')
     {
         this.zoom = this.mapOptions.mapview.zoom;
@@ -21,15 +27,7 @@ XROWMap.prototype.init = function(element) {
     {
         this.zoom = this.layerzoom;
     }
-    OpenLayers.Layer.GML = OpenLayers.Class(OpenLayers.Layer.GML, {requestFailure:false});
-    OpenLayers.ImgPath = "/extension/xrowgis/design/standard/javascript/OpenLayers/img/";
-    OpenLayers.Request.DEFAULT_CONFIG.url = location.host;// change the url
-                                                            // from
-                                                            // window.location.href
-                                                            // to location .host
-
     // fix for elements which are not visibly at first, for e.g. maps which are hidden in tabs
-    
     if(typeof(this.mapOptions.mapview.height)=='undefined')
     {
         if ($(element).height() == 0) 
@@ -70,17 +68,17 @@ XROWMap.prototype.init = function(element) {
         this.map.setOptions(options);
     }
 
-    // create Layers
+    //create Layers
     map = this.map;
-    var that = this;
     $(this.config).find('li').each(function(index, value)
     {
         if($(this).data().service == 'Vector')
         {
+            //perhaps we need to handle different kinds of vector layers
             switch($(this).data().vectortype)
             {
                 case 'gpx':
-                    // Add the Layer with the GPX Tracks
+                    // Add the Layer with the GPX Track
                     this.layer = new OpenLayers.Layer.Vector( $(this).data().layername , {
                         isBaseLayer: $(this).data().layeroptions.isBaseLayer,
                         visibility: $(this).data().layeroptions.visibility,
@@ -92,13 +90,15 @@ XROWMap.prototype.init = function(element) {
                         style: $(this).data().routeparams.style,
                         projection: new OpenLayers.Projection("EPSG:4326")
                     });
-                    GPXLayers[y] = 
+                    //make different config informations accessable for further progress
+                    GPXLayers[this.layer.id] = 
                     {
-                            'layer' : this.layer,
-                            'start' : $(this).data().routeparams.start,
-                            'end' : $(this).data().routeparams.end
-                    }
-                    ++y;
+                       'layer' : this.layer,
+                       'start' : $(this).data().routeparams.start,
+                       'end' : $(this).data().routeparams.end,
+                       'url' : $(this).data().routeparams.featureURL,
+                       'show' : $(this).data().routeparams.show
+                    };
                     break;
             }
         }
@@ -110,7 +110,7 @@ XROWMap.prototype.init = function(element) {
         switch($(this).data().service)
         {
             case 'GML':
-                this.layer.setVisibility(false);
+                this.layer.setVisibility($(this).data().layeroptions.visibility);//check why we have to set the visibility here
         }
         
         if(typeof($(this).data().layersettings)!='undefined')
@@ -121,7 +121,6 @@ XROWMap.prototype.init = function(element) {
             {
                 layersettings[i] = eval(tmp[i]);
             }
-            
             this.layer.addOptions(layersettings);
         }
         // save all special feature Layers to this.map for next steps
@@ -135,7 +134,6 @@ XROWMap.prototype.init = function(element) {
             }
             ++x;
         }
-
         map.addLayer(this.layer);
     });
     this.map.featureLayers = featureLayers;
@@ -217,11 +215,11 @@ $(document).ready(function() {
     
     $("input.map-search").click(function()
             {
-                jQuery.ez('xrowGIS_page::updateMap',{'input': $("input.global-map-search").val(), 'mapsearch' : true},
-                        function(result) {
-                            position  = {'coords' : {'longitude' : result.content.lon, 'latitude' : result.content.lat}};
-                            handle_geolocation_query(position);
+                mapSearch();
             });
+    $('#map-search-form').submit(function()
+            {
+                mapSearch();
             });
     $("input.current-position").click(function()
             {
@@ -235,25 +233,51 @@ $(document).ready(function() {
         {
             if($(this)[0].parentNode.layer.visibility===true && ($(this)[0].parentNode.layer.isBaseLayer===false || $(this)[0].parentNode.layer.isBaseLayer=='false'))
             {
+                if(typeof(window.map.map.layerLinkage[$(this)[0].parentNode.layer.id]) != 'undefined')
+                {
+                    $(window.map.map.layerLinkage[$(this)[0].parentNode.layer.id]).each(function(index, value)
+                            {
+                                window.map.map.getLayersByName(value)[0].setVisibility(false);
+                            });
+                }
                 $(this)[0].parentNode.layer.setVisibility(false);
-//                $(this)[0].parentNode.layer.visibility = false;
-//                $(this)[0].parentNode.layer.redraw();
             }else
             {
+                if(typeof(window.map.map.layerLinkage[$(this)[0].parentNode.layer.id]) != 'undefined')
+                {
+                    $(window.map.map.layerLinkage[$(this)[0].parentNode.layer.id]).each(function(index, value)
+                            {
+                                window.map.map.getLayersByName(value)[0].setVisibility(true);
+                            });
+                }
                 $(this)[0].parentNode.layer.setVisibility(true);
-//                $(this)[0].parentNode.layer.visibility = true;
-//                $(this)[0].parentNode.layer.redraw();
             }
         });
     $(".click-list input[type=checkbox]").each(
             function() {
                 if($(this)[0].checked === true)
                 {
+                    if(typeof(window.map.map.layerLinkage[$(this)[0].parentElement.layer.id]) != 'undefined')
+                    {
+                        $(window.map.map.layerLinkage[$(this)[0].parentElement.layer.id]).each(function(index, value)
+                                {
+                                    window.map.map.getLayersByName(value)[0].setVisibility(true);
+                                });
+                    }
                     $(this)[0].parentElement.layer.setVisibility(true);
                 }
             }
             );
 });
+
+function mapSearch()
+{
+    jQuery.ez('xrowGIS_page::updateMap',{'input': $("input.global-map-search").val(), 'mapsearch' : true},
+            function(result) {
+                position  = {'coords' : {'longitude' : result.content.lon, 'latitude' : result.content.lat}};
+                handle_geolocation_query(position);
+});
+}
 
 function zoomEnd()
 {
@@ -266,7 +290,6 @@ function zoomEnd()
             });
     
 }
-
 function stringify(jsonData) {
     var strJsonData = '{', itemCount = 0, temp;
 

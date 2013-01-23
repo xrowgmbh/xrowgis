@@ -6,15 +6,17 @@ POIMap.prototype = new XROWMap();
 POIMap.prototype.constructor = POIMap;
 
 POIMap.prototype.start = function(element) {
-    this.init(element);//init parent Map
-//    this.parentMap = this.map;//we want to render the parent Map, if there is no return value from gml
+    this.init(element);//init parent Map 
     this.markerLayer;
     this.popup;
     this.layerURL=[];
+    this.map.layerLinkage=[];
+    this.map.selectLayers=[];
 
     if (this.options.url != "false" || typeof(this.map.featureLayers) != 'undefined') {//if we have no url, render the default map
 
         this.markers.removeMarker(this.markers.markers[0]);// destroy Parent Marker
+
         for(var i in this.map.featureLayers)
         {
             switch(this.map.featureLayers[i].featureType)
@@ -33,39 +35,30 @@ POIMap.prototype.start = function(element) {
                     format : OpenLayers.Format.GeoRSS,
                     styleMap : this.styledPoint
                 });
-                this.popupControl = new OpenLayers.Control.SelectFeature(
-                        this.map.featureLayers[i].layer,
-                        {
-                            onSelect : function(feature) {
-                                var description = "";
-                                this.pos = feature.geometry;
-                                this.featureLonLat = new OpenLayers.LonLat(this.pos.x, this.pos.y);
-                                this.map.setCenter(this.featureLonLat, 16);
-                                
-                                if(feature.attributes.description != 'No Description')
-                                {
-                                    description = "<p>" + feature.attributes.description + "</p><br />";
-                                }
-                                if (typeof this.popup != "undefined" && this.popup != null) {
-                                    this.map.removePopup(this.popup);
-                                }
-                                this.popup = new OpenLayers.Popup.FramedCloud("popup",
-                                        this.featureLonLat,
-                                        new OpenLayers.Size(200, 200), 
-                                        "<h2>" + feature.attributes.title + "</h2>" 
-                                            + description  + 
-                                        "<a href='" + feature.attributes.link + "' target='_blank'>mehr...</a>",
-                                        null, 
-                                        false);
-                                this.popup.calculateRelativePosition = function () {
-                                    return 'br';
-                                }
-                                this.map.addPopup(this.popup);
-                                this.popup.events.register("click", this, popupDestroy);
-                            }
-                        });
-                this.map.addControl(this.popupControl);
-                this.popupControl.activate();
+                this.map.featureLayers[i].layer.featureType = this.map.featureLayers[i].featureType;
+                this.map.selectLayers.push(this.map.featureLayers[i].layer);
+              break;
+            case 'GPX':
+                that = this;
+                $.ajaxSetup({
+                    async: false
+                    });
+                $(".XROWMap").addClass("is_loading");
+                $.get(""+this.map.GPXLayers[this.map.featureLayers[i].layer.id].url+"",{},function(xml){
+                    that.map.featureLayers[i].layer.featureContent = {'attributes' : 
+                                                                        {'description' : $(xml).find("item").find("description").text(), 
+                                                                         'link': $(xml).find("item").find("link").text(),
+                                                                         'title' : $(xml).find("item").find("title").text()
+                                                                         }
+                                                                      };
+                    that.map.featureLayers[i].layer.featureURL = that.map.GPXLayers[that.map.featureLayers[i].layer.id].url;
+                    that.map.featureLayers[i].layer.featureType = that.map.featureLayers[i].featureType;
+                    startLonLat = new Proj4js.Point(that.map.GPXLayers[that.map.featureLayers[i].layer.id].start.lon, that.map.GPXLayers[that.map.featureLayers[i].layer.id].start.lat);
+                    Proj4js.transform(new Proj4js.Proj(that.projection.projection), new Proj4js.Proj(that.projection.displayProjection), startLonLat);
+                    that.map.featureLayers[i].layer.featurePoint = {'x' : startLonLat.x, 'y' : startLonLat.y};
+                    $(".XROWMap").removeClass("is_loading");
+                    });
+                this.map.selectLayers.push(this.map.featureLayers[i].layer);
               break;
             case 'Shape':
                     if(typeof(this.layerURL[this.map.featureLayers[i].layer.url])!= 'object')
@@ -83,7 +76,7 @@ POIMap.prototype.start = function(element) {
         var tmp, map;
         map = this.map;
         tmp = this.layerURL[x];
-        
+
         map.events.register('click', map, function(e) {
             xy = e.xy;
             params_new =
@@ -110,10 +103,60 @@ POIMap.prototype.start = function(element) {
             OpenLayers.Event.stop(e);
         });
     }
+    initPopups();
     this.map.render(element);
 }
 
 //all this stuff underneath here comes to MapUtils.js...later.
+function initPopups()
+{
+    this.popupControl = new OpenLayers.Control.SelectFeature(
+            this.map.map.selectLayers,
+            {
+                onSelect : function(feature) {
+                    var description = "";
+                    if(feature.layer.featureType == 'GPX')
+                    {
+                        this.pos = feature.geometry.components[feature.geometry.components.length/2];
+                        if(typeof(this.pos) == 'undefined')
+                        {
+                            this.pos = feature.layer.featurePoint;
+                        }
+                        feature.attributes = feature.layer.featureContent.attributes;
+                    }else
+                    {
+                        this.pos = feature.geometry;
+                    }
+                    
+                    this.featureLonLat = new OpenLayers.LonLat(this.pos.x, this.pos.y);
+                    this.map.setCenter(this.featureLonLat, 16);
+                    
+                    if(feature.attributes.description != 'No Description')
+                    {
+                        description = "<p>" + feature.attributes.description + "</p><br />";
+                    }
+                    
+                    if (typeof this.popup != "undefined" && this.popup != null) {
+                        this.map.removePopup(this.popup);
+                    }
+                    this.popup = new OpenLayers.Popup.FramedCloud("popup",
+                            this.featureLonLat,
+                            new OpenLayers.Size(200, 200), 
+                            "<h2>" + feature.attributes.title + "</h2>" + description  + "<a href='" + feature.attributes.link + "' target='_blank'>mehr...</a>",
+                            null, 
+                            false
+                        );
+                    this.popup.calculateRelativePosition = function () {
+                        return 'br';
+                    }
+                    this.map.addPopup(this.popup);
+                    this.popup.events.register("click", this, popupDestroy);
+                }
+            });
+    this.map.map.addControl(this.popupControl);
+    this.popupControl.activate();
+}
+
 
 function setHTML(response) {
     var cat="", src="", leg="", linkinfo="", lines, vals, popup_info;

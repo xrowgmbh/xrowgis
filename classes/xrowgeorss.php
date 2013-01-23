@@ -16,6 +16,7 @@ class xrowGEORSS
     function generateGEORSSFeed()
     {
         $parent = self::fetchParent();
+
         if ( $parent instanceof eZContentObject )
         {
             $treeNodes = self::fetchTreeNode();
@@ -29,7 +30,7 @@ class xrowGEORSS
             $this->feed->link = eZSys::serverURL();
             $this->feed->description = 'GEORSS Feed Channel';
             $this->feed->language = eZLocale::currentLocaleCode();
-            
+
             foreach ( $treeNodes as $node )
             {
                 $dm = $node->dataMap();
@@ -59,9 +60,15 @@ class xrowGEORSS
                     
                     if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'has_content' ) )
                     {
-                        $content = $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'content' );
-                        
-                        if ( ( $imageObject = eZContentObject::fetch( $content['relation_list'][0]['contentobject_id'] ) ) instanceof eZContentObject && $imageObject->canRead() )
+                        if(($content = $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'content' )) instanceof eZContentObject)
+                        {
+                            $imageID = $content->attribute('id');
+                        }
+                        else
+                        {
+                            $imageID = $content['relation_list'][0]['contentobject_id'];
+                        }
+                        if ( ( $imageObject = eZContentObject::fetch( $imageID ) ) instanceof eZContentObject && $imageObject->canRead() )
                         {
                             $imageObject = $imageObject->dataMap();
                             foreach ( $imageObject as $coAttribute )
@@ -114,8 +121,19 @@ class xrowGEORSS
         $params = array();
         $params['ClassFilterType'] = 'include';
         $params['ClassFilterArray'] = $this->cache['class_identifier'];
-        #@TODO add custom filter to only select items with gis content
-        return eZContentObjectTreeNode::subTreeByNodeID( $params, $this->nodeID );
+        
+        if((is_array($treeNode = eZContentObjectTreeNode::subTreeByNodeID( $params, $this->nodeID ))) && !empty($treeNode))
+        {
+            return $treeNode;
+        }
+        else
+        {
+            if(($treeNode = eZContentObjectTreeNode::fetch($this->nodeID)) instanceof eZContentObjectTreeNode)
+            {
+                return array($treeNode);
+            }
+        }
+        return null;
     }
 
     function fetchParent()
@@ -129,6 +147,7 @@ class xrowGEORSS
         $sql = "SELECT DISTINCT I.contentclass_id, N.identifier FROM `ezcontentclass_attribute` AS I INNER JOIN `ezcontentclass` AS N On I.contentclass_id = N.id WHERE I.data_type_string ='" . xrowGIStype::DATATYPE_STRING . "'";
         
         $results = $db->arrayQuery( $sql );
+
         $retVal = array();
         $gisini = eZINI::instance( "xrowgis.ini" );
         $defaultIdentifier = $gisini->variable( "GeoRSSAttributes", "AttributeIdentifier" );
@@ -139,6 +158,8 @@ class xrowGEORSS
         
         foreach ( $results as $key => $result )
         {
+            $retVal['class_identifier'][] = $results[$key]['identifier'];
+            
             $retVal['cache'][$results[$key]['identifier']]['default'] = $defaultIdentifier[$results[$key]['identifier']];
             $retVal['cache'][$results[$key]['identifier']]['alternative'] = $alternativeIdentifier[$results[$key]['identifier']];
             $retVal['cache'][$results[$key]['identifier']]['image'] = $imageIdentifier[$results[$key]['identifier']];

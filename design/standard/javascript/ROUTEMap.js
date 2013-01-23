@@ -6,44 +6,43 @@ ROUTEMap.prototype.constructor = ROUTEMap;
 
 ROUTEMap.prototype.start = function(element) {
     POIMap.prototype.start(element);
-    var startLonLat, startFeature, endLonLat, endFeature, 
-    styledPoint = {
-            externalGraphic: this.mapOptions.icon.src,
-            graphicWith: this.size.w,
-            graphicHeight: this.size.h,
-            graphicXOffset: this.xoffset,
-            graphicYOffset: this.yoffset,
-            cursor : 'pointer',
-            pointRadius : 13
-        }
-    if ((typeof (this.map.GPXLayers) != 'undefined')) {
-        
-        for(var i in this.map.GPXLayers)
-        {
-            if ((typeof (this.map.GPXLayers[i].start) != 'undefined' || this.map.GPXLayers[i].start != '')
-                    && (typeof (this.map.GPXLayers[i].end) != 'undefined' || this.map.GPXLayers[i].end != '')) {
-                
-                startLonLat = new Proj4js.Point(this.map.GPXLayers[i].start.lon,
-                        this.map.GPXLayers[i].start.lat);
-                Proj4js.transform(new Proj4js.Proj(this.projection.projection),
-                        new Proj4js.Proj(this.projection.displayProjection),
-                        startLonLat);
-                startLonLat = new OpenLayers.Geometry.Point(startLonLat.x, startLonLat.y);
-                startFeature = new OpenLayers.Feature.Vector(startLonLat);
-                startFeature.style = styledPoint;
-                
-                endLonLat = new Proj4js.Point(this.map.GPXLayers[i].end.lon,
-                        this.map.GPXLayers[i].end.lat);
-                Proj4js.transform(new Proj4js.Proj(this.projection.projection),
-                        new Proj4js.Proj(this.projection.displayProjection),
-                        endLonLat);
-                endLonLat = new OpenLayers.Geometry.Point(endLonLat.x, endLonLat.y);
-                endFeature = new OpenLayers.Feature.Vector(endLonLat);
-                endFeature.style = styledPoint;
+    var startLonLat, startFeature;
 
-//                this.map.GPXLayers[i].layer.addFeatures([startFeature, endFeature]);
+    for(var i in this.map.GPXLayers)
+        {
+            if(this.map.GPXLayers[i].show.marker != false && typeof(this.map.GPXLayers[i].show.marker) != 'undefined')
+            {
+                if ((typeof (this.map.GPXLayers[i].start) != 'undefined' || this.map.GPXLayers[i].start != '')
+                        && (typeof (this.map.GPXLayers[i].end) != 'undefined' || this.map.GPXLayers[i].end != '')) {
+                    
+                    this.GPXMarkers = new OpenLayers.Layer.Markers("GPXMarkers_"+this.map.GPXLayers[i].layer.id);
+                    
+                    //add start Marker Layer
+                    startLonLat = new Proj4js.Point(this.map.GPXLayers[i].start.lon, this.map.GPXLayers[i].start.lat);
+                    Proj4js.transform(new Proj4js.Proj(this.projection.projection), new Proj4js.Proj(this.projection.displayProjection), startLonLat);
+                    startLonLat = new OpenLayers.LonLat(startLonLat.x, startLonLat.y);
+                    this.GPXMarkers.addMarker(new OpenLayers.Marker(startLonLat, this.icon.clone()));
+
+                    //add end Marker
+                    endLonLat = new Proj4js.Point(this.map.GPXLayers[i].end.lon, this.map.GPXLayers[i].end.lat);
+                    Proj4js.transform(new Proj4js.Proj(this.projection.projection), new Proj4js.Proj(this.projection.displayProjection), endLonLat);
+                    endLonLat = new OpenLayers.LonLat(endLonLat.x, endLonLat.y);
+                    this.GPXMarkers.addMarker(new OpenLayers.Marker(endLonLat, this.icon.clone()));
+
+                    this.map.addLayer(this.GPXMarkers);
+                    this.GPXMarkers.setVisibility(this.map.GPXLayers[i].layer.visibility);
+
+                    //let's save the linkage between parent layer and start+end Point to hide and show them together if needed
+                    this.map.layerLinkage[this.map.GPXLayers[i].layer.id]=["GPXMarkers_"+this.map.GPXLayers[i].layer.id];
+                }
+            }
+            //try to center the viewport and adjust the zoom using the start point lonlat
+            if(this.map.GPXLayers[i].show.zoom != false && typeof(this.map.GPXLayers[i].show.zoom) != 'undefined')
+            {
+                this.map.setCenter(startLonLat, this.map.getZoomForExtent(this.map.GPXLayers[i].layer.getExtent(), false));
             }
         }
-    }
     this.map.render(element);
+    
 }
+
