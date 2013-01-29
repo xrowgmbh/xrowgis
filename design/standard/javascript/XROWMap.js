@@ -4,7 +4,7 @@ XROWMap.prototype.start = function(element) {
     this.init(element);
 }
 XROWMap.prototype.init = function(element) {
-    var map, options={}, controlOptions, layersettings={}, tmp, featureLayers=[], GPXLayers=[], x=0, y=0, that;
+    var ini, map, options={}, controlOptions, layersettings={}, tmp, url, featureLayers=[], GPXLayers=[], x=0, y=0, that;
     this.map, this.layer, this.styledPoint, this.lonLat, this.markers, this.params={}, this.layerOptions={};
     this.options = $.data(element);
     this.config = $('.'+this.options.config);
@@ -44,6 +44,13 @@ XROWMap.prototype.init = function(element) {
     {
         $(element).width(this.mapOptions.mapview.width);
     }
+    
+    //get configurations file contents
+    /*jQuery.ez('xrowGIS_page::getINI',{},
+            function(result) {
+                window.map.config.ini = result.content.BlockValues;
+                
+    });*/
     // initalize map Object
     this.map = new OpenLayers.Map(
                 {
@@ -104,7 +111,12 @@ XROWMap.prototype.init = function(element) {
         }
         else
         {
-            eval("this.layer = new OpenLayers.Layer." + $(this).data().service + "('" + $(this).data().layername + "', '" + $(this).data().url + "', " + stringify($(this).data().layerparams) + ", " + stringify($(this).data().layeroptions) + ");");
+            if($(this).data().url != undefined)
+            {
+                url = $(this).data().url;
+            }
+            
+            eval("this.layer = new OpenLayers.Layer." + $(this).data().service + "('" + $(this).data().layername + "', '" + url + "', " + stringify($(this).data().layerparams) + ", " + stringify($(this).data().layeroptions) + ");");
         }
         //some layers need a special treatment - place it here if needed
         switch($(this).data().service)
@@ -130,6 +142,7 @@ XROWMap.prototype.init = function(element) {
             {
                     'featureType' : $(this).data().features.featureType,
                     'layerName' : $(this).data().layername,
+                    'layerAssets' : $(this).data().layerassets,
                     'layer' : this.layer
             }
             ++x;
@@ -143,13 +156,12 @@ XROWMap.prototype.init = function(element) {
     //ie 8 hack -> Bug #3182
     this.map.Z_INDEX_BASE.Control=980;
     this.map.eventsDiv.style.zIndex = this.map.Z_INDEX_BASE.Control - 1;
-
     // defining Icon stuff for gml Layer and marker Layer
-    this.size = new OpenLayers.Size(this.mapOptions.icon.width, this.mapOptions.icon.height);
-    this.xoffset = (Number(this.mapOptions.icon.xoffset));
-    this.yoffset = (Number(this.mapOptions.icon.yoffset));
+    this.size = new OpenLayers.Size(this.mapOptions.assets.icon.width, this.mapOptions.assets.icon.height);
+    this.xoffset = (Number(this.mapOptions.assets.icon.xoffset));
+    this.yoffset = (Number(this.mapOptions.assets.icon.yoffset));
     this.offset = new OpenLayers.Pixel(this.xoffset, this.yoffset);
-    this.icon = new OpenLayers.Icon(this.mapOptions.icon.src, this.size, this.offset);
+    this.icon = new OpenLayers.Icon(this.mapOptions.assets.icon.src, this.size, this.offset);
     
     // add simple Marker and reproject the coords
     this.markers = new OpenLayers.Layer.Markers("Marker Layer");

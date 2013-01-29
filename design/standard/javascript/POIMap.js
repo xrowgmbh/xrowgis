@@ -7,6 +7,7 @@ POIMap.prototype.constructor = POIMap;
 
 POIMap.prototype.start = function(element) {
     this.init(element);//init parent Map 
+    var styleMapOptions;
     this.markerLayer;
     this.popup;
     this.layerURL=[];
@@ -16,25 +17,43 @@ POIMap.prototype.start = function(element) {
     if (this.options.url != "false" || typeof(this.map.featureLayers) != 'undefined') {//if we have no url, render the default map
 
         this.markers.removeMarker(this.markers.markers[0]);// destroy Parent Marker
-
         for(var i in this.map.featureLayers)
         {
             switch(this.map.featureLayers[i].featureType)
             {
             case 'GeoRSS':
+                if(this.map.featureLayers[i].layerAssets != undefined && this.map.featureLayers[i].layerAssets.src != undefined)
+                {
+                    styleMapOptions = {
+                            graphicWidth : this.map.featureLayers[i].layerAssets.width,
+                            graphicHeight : this.map.featureLayers[i].layerAssets.height,
+                            graphicXOffset : this.map.featureLayers[i].layerAssets.xoffset,
+                            graphicYOffset : this.map.featureLayers[i].layerAssets.yoffset,
+                            externalGraphic : this.map.featureLayers[i].layerAssets.src,
+                            pointRadius : "13",
+                            cursor : 'pointer'
+                        };
+                }
+                else
+                {
+                    styleMapOptions = {
+                            graphicWidth : this.icon.size.w,
+                            graphicHeight : this.icon.size.h,
+                            graphicXOffset : this.icon.offset.x,
+                            graphicYOffset : this.icon.offset.y,
+                            externalGraphic : this.icon.url,
+                            pointRadius : "13",
+                            cursor : 'pointer'
+                        };
+                }
                 this.styledPoint = new OpenLayers.StyleMap({
-                    "default" : new OpenLayers.Style({
-                        graphicWidth : this.size.w,
-                        graphicHeight : this.size.h,
-                        externalGraphic : this.mapOptions.icon.src,
-                        pointRadius : "13",
-                        cursor : 'pointer'
-                    })
-                });
+                    "default" : new OpenLayers.Style(styleMapOptions)});
+                
                 this.map.featureLayers[i].layer.addOptions({
                     format : OpenLayers.Format.GeoRSS,
                     styleMap : this.styledPoint
                 });
+                
                 this.map.featureLayers[i].layer.featureType = this.map.featureLayers[i].featureType;
                 this.map.selectLayers.push(this.map.featureLayers[i].layer);
               break;
@@ -223,7 +242,6 @@ function initiate_geolocation() {
     navigator.geolocation.getCurrentPosition(handle_geolocation_query);  
 }  
 
-//@TODO Make it more generic...avoid hardcoded icon path 
 function handle_geolocation_query(position){
     if(typeof(window.currentPos)!= 'undefined')
     {
@@ -237,7 +255,7 @@ function handle_geolocation_query(position){
         window.map.map.addLayer(currentPos);
         currentPos.setZIndex( 1001 );
         lonLat = new OpenLayers.LonLat(lonLat.x, lonLat.y);
-        currentPos.addMarker(new OpenLayers.Marker(lonLat, new OpenLayers.Icon("/extension/hannover/design/hannover/images/openlayers-custom/curpos.png", new OpenLayers.Size(24, 32))));
+        currentPos.addMarker(new OpenLayers.Marker(lonLat, new OpenLayers.Icon(window.map.mapOptions.assets.curPos.src, new OpenLayers.Size(window.map.mapOptions.assets.curPos.width, window.map.mapOptions.assets.curPos.height))));
         window.map.map.setCenter(lonLat, window.map.zoom);
     }
 

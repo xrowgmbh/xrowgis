@@ -101,7 +101,6 @@
                                     zoom : data.zoom,
                                     drag : true
                                 };
-                                
                                 jQuery().servemap('createMap', options);
 
                                 jQuery('#xrowGIS-lon_'+data.attributeID).val(result.content.lon);

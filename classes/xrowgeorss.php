@@ -123,7 +123,7 @@ class xrowGEORSS
         $params = array();
         $params['ClassFilterType'] = 'include';
         $params['ClassFilterArray'] = $this->cache['class_identifier'];
-        
+
         if ( ( is_array( $treeNode = eZContentObjectTreeNode::subTreeByNodeID( $params, $this->nodeID ) ) ) && ! empty( $treeNode ) )
         {
             return $treeNode;

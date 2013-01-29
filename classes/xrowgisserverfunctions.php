@@ -50,12 +50,10 @@ class xrowGISServerfunctions extends ezjscServerFunctions
                 $city = $data['ContentObjectAttribute_xrowgis_city_' . $attributeID];
                 $state = $data['ContentObjectAttribute_xrowgis_state_' . $attributeID];
                 $country = $data['ContentObjectAttribute_xrowgis_country_' . $attributeID];
-                $longitude = $data['ContentObjectAttribute_xrowgis_longitude_' . $attributeID];
-                $latitute = $data['ContentObjectAttribute_xrowgis_latitude_' . $attributeID];
-
+//                $longitude = $data['ContentObjectAttribute_xrowgis_longitude_' . $attributeID];
+//                $latitute = $data['ContentObjectAttribute_xrowgis_latitude_' . $attributeID];
                 $geocoder->setAddress( $street, $zip, $city, $state, $country );
             }
-        
         }
         if ( $geocoder->request() )
         {
@@ -187,6 +185,11 @@ class xrowGISServerfunctions extends ezjscServerFunctions
         $result['template'] = $tpl->fetch( 'design:xrowgis/xrowgis.tpl' );
         
         return $result;
+    }
+    
+    public static function getINI()
+    {
+        return eZINI::instance( 'xrowgis.ini' );
     }
 
 }
