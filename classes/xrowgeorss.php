@@ -57,6 +57,9 @@ class xrowGEORSS
                             $this->cache['cache'][$node->classIdentifier()]['text'] = $this->cache['cache'][$node->classIdentifier()]['default'];
                         }
                     }
+                    //add ContentobjectID to Description 
+                    $item->description = htmlspecialchars( '<span style="display:none;" class="coID" data-id="'.$node->attribute('contentobject_id').'"></span>' );
+                    
                     if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']] instanceof eZContentObjectAttribute )
                     {
                         if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'has_content' ) )
@@ -85,7 +88,7 @@ class xrowGEORSS
                                                 $content->imageAlias( $this->cache['cache'][$node->classIdentifier()]['imageAlias'] );
                                             }
                                             $image = eZSys::instance()->serverURL() . '/' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["dirpath"] . '/' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["basename"] . $prefix . '.' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["suffix"];
-                                            $item->description = '<image class="' . $this->cache['cache'][$node->classIdentifier()]['imageStyle'] . '" alt="' . $coAttribute->content()->attribute( 'alternative_text' ) . '" src="' . $image . '">';
+                                            $item->description .= '<image class="' . $this->cache['cache'][$node->classIdentifier()]['imageStyle'] . '" alt="' . $coAttribute->content()->attribute( 'alternative_text' ) . '" src="' . $image . '">';
                                         }
                                     }
                                 }
@@ -96,7 +99,7 @@ class xrowGEORSS
                     {
                         $outputHandler = new xrowRSSOutputHandler( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_text' ), false );
                         $htmlContent = $outputHandler->outputText();
-                        $item->description .= htmlspecialchars( trim( $htmlContent ) );
+//                        $item->description .= htmlspecialchars( trim( $htmlContent ).'<span style="display:none;" class="coID" data-id="'.$node->attribute('contentobject_id').'"></span>' );
                     }
                     else
                     {

@@ -115,7 +115,6 @@ XROWMap.prototype.init = function(element) {
             {
                 url = $(this).data().url;
             }
-            
             eval("this.layer = new OpenLayers.Layer." + $(this).data().service + "('" + $(this).data().layername + "', '" + url + "', " + stringify($(this).data().layerparams) + ", " + stringify($(this).data().layeroptions) + ");");
         }
         //some layers need a special treatment - place it here if needed
@@ -288,7 +287,7 @@ function mapSearch()
             function(result) {
                 position  = {'coords' : {'longitude' : result.content.lon, 'latitude' : result.content.lat}};
                 handle_geolocation_query(position);
-});
+    });
 }
 
 function zoomEnd()
