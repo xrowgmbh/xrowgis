@@ -11,6 +11,7 @@ POIMap.prototype.start = function(element) {
     this.markerLayer;
     this.popup;
     this.layerURL=[];
+    this.map.layerLinkage=[];
     this.map.featureLinkage={};
     this.map.selectLayers=[];
 
