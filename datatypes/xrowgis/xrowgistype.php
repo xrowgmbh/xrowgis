@@ -70,7 +70,6 @@ class xrowGIStype extends eZDataType
                     $contentObjectAttribute->Content = $gp;
                     $contentObjectAttribute->setAttribute( 'data_int', $relatedObjectID );
                     $contentObjectAttribute->setAttribute( 'sort_key_int', $relatedObjectID );
-                    $contentObjectAttribute->store();
                     
                     $id_array = array();
                     $content_class_ids = eZPersistentObject::fetchObjectList( eZContentClassAttribute::definition(), array( 
@@ -134,54 +133,7 @@ class xrowGIStype extends eZDataType
     {
         return 'int';
     }
-/*
-    private static function updateRelAttributes( $contentObjectAttribute )
-    {
-        $id_array = array();
-        $content_class_ids = eZPersistentObject::fetchObjectList( eZContentClassAttribute::definition(), array( 
-            'id' 
-        ), array( 
-            'data_type_string' => xrowgistype::DATATYPE_STRING 
-        ), null, null, false, false, null, null, null );
-        
-        foreach ( $content_class_ids as $id )
-        {
-            $id_array[] = $id['id'];
-        }
-        $content_class_ids = implode( ',', $id_array );
-        
-        $custom_conds = " AND contentclassattribute_id IN ({$content_class_ids})";
-        
-        for ( $i = 0; $i < 4; $i ++ )
-        {
-            if ( $i == 0 )
-            {
-                $coID = $contentObjectAttribute->attribute( 'contentobject_id' );
-            }
-            
-            $list = eZPersistentObject::fetchObjectList( eZContentObjectAttribute::definition(), null, array( 
-                'sort_key_int' => $coID 
-            ), null, null, true, false, null, null, $custom_conds );
-            $ids = array();
-            foreach ( $list as $item )
-            {
-                $GISCo = eZPersistentObject::fetchObject( xrowGISPosition::definition(), null, array( 
-                    'contentobject_attribute_id' => $item->attribute( 'id' ) , 
-                    'contentobject_attribute_version' => $item->attribute( 'version' ) 
-                ), true );
-                
-                $GISCo = $contentObjectAttribute->Content;
-                
-                $GISCo->setAttribute( 'contentobject_attribute_id', $item->attribute( 'id' ) );
-                $GISCo->setAttribute( 'contentobject_attribute_version', $item->attribute( 'version' ) );
-                $GISCo->store();
-                
-                $coID = $item->attribute( 'contentobject_id' );
-            }
-        
-        }
-    }
-*/
+	
     /*!
      Stores relation to the ezcontentobject_link table
     */

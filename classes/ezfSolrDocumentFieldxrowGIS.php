@@ -49,7 +49,7 @@ class ezfSolrDocumentFieldxrowGIS extends ezfSolrDocumentFieldBase
         if($this->ContentObjectAttribute->attribute( 'has_content' ))
         {
             $data[self::getFieldName( $contentClassAttribute, self::DEFAULT_SUBATTRIBUTE )] = $this->ContentObjectAttribute->attribute( 'content' )->attribute( 'city' );
-            $data[self::getFieldName( $contentClassAttribute, 'coordinates' )] = $this->ContentObjectAttribute->attribute( 'content' )->attribute( 'longitude' ).','.$this->ContentObjectAttribute->attribute( 'content' )->attribute( 'latitude' );
+            $data[self::getFieldName( $contentClassAttribute, 'coordinates' )] = $this->ContentObjectAttribute->attribute( 'content' )->attribute( 'latitude' ).','.$this->ContentObjectAttribute->attribute( 'content' )->attribute( 'longitude' );
             $data[self::getFieldName( $contentClassAttribute, 'location' )] = $this->ContentObjectAttribute->attribute( 'content' )->attribute( 'latitude' ).','.$this->ContentObjectAttribute->attribute( 'content' )->attribute( 'longitude' );
         }
         return $data;
