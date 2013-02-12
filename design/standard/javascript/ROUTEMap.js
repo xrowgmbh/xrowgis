@@ -7,7 +7,6 @@ ROUTEMap.prototype.constructor = ROUTEMap;
 ROUTEMap.prototype.start = function(element) {
     POIMap.prototype.start(element);
     var startLonLat, startFeature;
-    this.map.layerLinkage=[];
 
     for(var i in this.map.GPXLayers)
         {

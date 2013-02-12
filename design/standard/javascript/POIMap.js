@@ -11,6 +11,7 @@ POIMap.prototype.start = function(element) {
     this.markerLayer;
     this.popup;
     this.layerURL=[];
+    this.map.layerLinkage=[];
     this.map.featureLinkage={};
     this.map.selectLayers=[];
 
@@ -54,11 +55,12 @@ POIMap.prototype.start = function(element) {
                     styleMap : this.styledPoint
                 });
                 
-//                this.map.featureLayers[i].layer.featureType = this.map.featureLayers[i].featureType;
-//                this.map.selectLayers.push(this.map.featureLayers[i].layer);
-//                this.map.featureLayers[i].layer.events.register('featureadded', this.map.featureLayers[i].layer, function(event){
-//                            console.log(event);
-//                        });
+                this.map.featureLayers[i].layer.featureType = this.map.featureLayers[i].featureType;
+                this.map.selectLayers.push(this.map.featureLayers[i].layer);
+                //add Linkage between contentobject an Feature on layer
+                this.map.featureLayers[i].layer.events.register('featureadded', this.map.featureLayers[i].layer, function(event){
+                    this.map.featureLinkage[$($(event.feature.attributes.description)[0]).data().id] = event.feature.geometry.id;
+                });
               break;
             case 'GPX':
                 that = this;
@@ -90,12 +92,12 @@ POIMap.prototype.start = function(element) {
                     this.layerURL[this.map.featureLayers[i].layer.url][i] = this.map.featureLayers[i].layerName;
               break;
             }
-            this.map.featureLayers[i].layer.featureType = this.map.featureLayers[i].featureType;
-            this.map.selectLayers.push(this.map.featureLayers[i].layer);
+//            this.map.featureLayers[i].layer.featureType = this.map.featureLayers[i].featureType;
+//            this.map.selectLayers.push(this.map.featureLayers[i].layer);
             //add Linkage between contentobject an Feature on layer
-            this.map.featureLayers[i].layer.events.register('featureadded', this.map.featureLayers[i].layer, function(event){
-                this.map.featureLinkage[$($(event.feature.attributes.description)[0]).data().id] = event.feature.geometry.id;
-            });
+//            this.map.featureLayers[i].layer.events.register('featureadded', this.map.featureLayers[i].layer, function(event){
+//                this.map.featureLinkage[$($(event.feature.attributes.description)[0]).data().id] = event.feature.geometry.id;
+//            });
         }
     }
     //@TODO: process getFeatureInfo only for the clicked Layer 
