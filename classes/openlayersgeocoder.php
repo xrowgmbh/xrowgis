@@ -48,14 +48,21 @@ class OpenLayersGeoCoder extends GeoCoder
     /*!
       Uses the google API to update the GeoCoder Object with a given search request
       If no valid data is found returns false.
-	*/
+    */
     
     function request()
     {
         $searchstring = array();
+        // ini values
+        $gisini = eZINI::instance( "xrowgis.ini" );
+        $url = $gisini->variable( "OpenLayers", "Url" );
+        $search = $gisini->variable( "search", "needle" );
+        $replace = $gisini->variable( "replace", "needle" );
+        $bounds = $gisini->variable( "GISSettings", "bounds" );
+        
         if ( $this->query_string )
         {
-            $searchstring = $this->query_string . " ";//hack to be sure, that all needles will be found right...
+            $searchstring = $gisini->variable('GISSettings', 'DefaultCountry').' '.$this->query_string . " "; //hack to be sure, that all needles will be found right...
         }
         else
         {
@@ -75,21 +82,14 @@ class OpenLayersGeoCoder extends GeoCoder
             $searchstring = implode( ' ', $searchstring );
         }
         
-        // ini values
-        $gisini = eZINI::instance( "xrowgis.ini" );
-        $url = $gisini->variable( "OpenLayers", "Url" );
-        $search = $gisini->variable( "search", "needle" );
-        $replace = $gisini->variable( "replace", "needle" );
-
-        if(!empty($search) && !empty($replace))
+        if ( ! empty( $search ) && ! empty( $replace ) )
         {
             $searchstring = preg_replace( $search, $replace, $searchstring );
         }
-
         if ( $this->reverse )
         {
             $reverseUrl = $gisini->variable( "OpenLayers", "ReverseUrl" );
-            $requestUrl = $reverseUrl . "?latlng=" . urlencode( $this->latitude ) . "," . urlencode( $this->longitude ) . "&sensor=false";
+            $requestUrl = $reverseUrl . "?latlng=" . urlencode( $this->latitude ) . "," . urlencode( $this->longitude ) . "&sensor=false&bounds=" . $bounds . "";
             
             $kml = new SimpleXMLElement( file_get_contents( $requestUrl ) );
             
@@ -117,10 +117,9 @@ class OpenLayersGeoCoder extends GeoCoder
             else
                 return false;
         }
-        $bounds = $gisini->variable( "GISSettings", "bounds" );
         $requestUrl = $url . "?address=" . urlencode( $searchstring ) . "&sensor=false&bounds=" . $bounds . "";
         
-//        eZDebug::writeDebug( $requestUrl, 'Openlayers GeoCoder Request' );
+        //        eZDebug::writeDebug( $requestUrl, 'Openlayers GeoCoder Request' );
         //request the google kml result
         $kml = new SimpleXMLElement( file_get_contents( $requestUrl ) );
         
