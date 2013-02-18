@@ -1,0 +1,1 @@
+<div id="cur_pos_list"></div>
