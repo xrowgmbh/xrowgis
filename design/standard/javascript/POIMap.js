@@ -61,6 +61,7 @@ POIMap.prototype.start = function(element) {
                 this.map.featureLayers[i].layer.events.register('featureadded', this.map.featureLayers[i].layer, function(event){
                     this.map.featureLinkage[$($(event.feature.attributes.description)[0]).data().id] = event.feature.geometry.id;
                 });
+                console.log(this.map);
               break;
             case 'GPX':
                 that = this;
@@ -144,7 +145,7 @@ function initPopups()
             this.map.map.selectLayers,
             {
                 onSelect : function(feature) {
-                    var description = "";
+                    
                     if(feature.layer.featureType == 'GPX')
                     {
                         this.pos = feature.geometry.components[feature.geometry.components.length/2];
@@ -161,18 +162,13 @@ function initPopups()
                     this.featureLonLat = new OpenLayers.LonLat(this.pos.x, this.pos.y);
                     this.map.setCenter(this.featureLonLat, 16);
                     
-                    if(feature.attributes.description != 'No Description')
-                    {
-                        description = "<p>" + feature.attributes.description + "</p><br />";
-                    }
-                    
                     if (typeof this.popup != "undefined" && this.popup != null) {
                         this.map.removePopup(this.popup);
                     }
                     this.popup = new OpenLayers.Popup.FramedCloud("popup",
                             this.featureLonLat,
                             new OpenLayers.Size(200, 200), 
-                            "<h2>" + feature.attributes.title + "</h2>" + description  + "<a href='" + feature.attributes.link + "' target='_blank'>mehr...</a>",
+                            feature.attributes.description,
                             null, 
                             false
                         );

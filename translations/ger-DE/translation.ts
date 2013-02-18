@@ -118,6 +118,10 @@
         <source>Address proposal</source>
         <translation>Adress Vorschlag</translation>
     </message>
+    <message>
+        <source>more</source>
+        <translation>mehr</translation>
+    </message>
 </context>
 <context>
     <name>kernel/classes/datatypes</name>

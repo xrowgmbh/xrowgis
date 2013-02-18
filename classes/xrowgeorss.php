@@ -19,6 +19,12 @@ class xrowGEORSS
         
         if ( $parent instanceof eZContentObject )
         {
+            $user = eZUser::fetch(eZUser::anonymousId());
+            $localVars = array( "cacheFileArray", "NodeID",   "Module", "tpl",
+            "LanguageCode",   "ViewMode", "Offset", "ini",
+            "cacheFileArray", "viewParameters",  "collectionAttributes",
+            "validation" );
+            $tpl = eZTemplate::factory();
             $treeNodes = self::fetchTreeNode();
             $this->feed = new ezcFeed();
             $this->point = new gPoint();
@@ -57,55 +63,15 @@ class xrowGEORSS
                             $this->cache['cache'][$node->classIdentifier()]['text'] = $this->cache['cache'][$node->classIdentifier()]['default'];
                         }
                     }
-                    //add ContentobjectID to Description 
-                    $item->description = htmlspecialchars( '<span style="display:none;" class="coID" data-id="'.$node->attribute('contentobject_id').'"></span>' );
                     
-                    if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']] instanceof eZContentObjectAttribute )
-                    {
-                        if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'has_content' ) )
-                        {
-                            if ( ( $content = $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'content' ) ) instanceof eZContentObject )
-                            {
-                                $imageID = $content->attribute( 'id' );
-                            }
-                            else
-                            {
-                                $imageID = $content['relation_list'][0]['contentobject_id'];
-                            }
-                            if ( ( $imageObject = eZContentObject::fetch( $imageID ) ) instanceof eZContentObject && $imageObject->canRead() )
-                            {
-                                $imageObject = $imageObject->dataMap();
-                                foreach ( $imageObject as $coAttribute )
-                                {
-                                    if ( $coAttribute->attribute( 'data_type_string' ) == eZImageType::DATA_TYPE_STRING )
-                                    {
-                                        if ( $coAttribute->content()->attribute( 'is_valid' ) )
-                                        {
-                                            $content = $coAttribute->content();
-                                            if ( ! empty( $this->cache['cache'][$node->classIdentifier()]['imageAlias'] ) || $this->cache['cache'][$node->classIdentifier()]['image'] != 'original' )
-                                            {
-                                                $prefix = "_{$this->cache['cache'][$node->classIdentifier()]['imageAlias']}";
-                                                $content->imageAlias( $this->cache['cache'][$node->classIdentifier()]['imageAlias'] );
-                                            }
-                                            $image = eZSys::instance()->serverURL() . '/' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["dirpath"] . '/' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["basename"] . $prefix . '.' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["suffix"];
-                                            $item->description .= '<image class="' . $this->cache['cache'][$node->classIdentifier()]['imageStyle'] . '" alt="' . $coAttribute->content()->attribute( 'alternative_text' ) . '" src="' . $image . '">';
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if ( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_type_string' ) == eZXMLTextType::DATA_TYPE_STRING )
-                    {
-                        $outputHandler = new xrowRSSOutputHandler( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_text' ), false );
-                        $htmlContent = $outputHandler->outputText();
-//                        $item->description .= htmlspecialchars( trim( $htmlContent ).'<span style="display:none;" class="coID" data-id="'.$node->attribute('contentobject_id').'"></span>' );
-                    }
-                    else
-                    {
-                        $item->description .= htmlspecialchars( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'content' ) );
-                    }
+                    $NodeID = $node->attribute('node_id');
                     
+                    $LanguageCode = false;
+                    $ViewMode = 'popup';
+                    
+                    $Result = eZNodeviewfunctions::generateNodeViewData( $tpl, $node, $node->attribute( 'object' ), $LanguageCode, $ViewMode, false );
+                    
+                    $item->description = $Result['content'];
                     $this->point->setLongLat( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude, $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude );
                     $this->point->convertLLtoTM();
                     

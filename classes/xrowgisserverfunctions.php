@@ -191,5 +191,27 @@ class xrowGISServerfunctions extends ezjscServerFunctions
     {
         return eZINI::instance( 'xrowgis.ini' );
     }
+    
+    public static function ShowCurPosItems()
+    {
+        $http = eZHTTPTool::instance();
+        $variables = array();
+        $variables['classes'] = $http->postVariable( 'SearchClass' );
+        $variables['SearchText'] = $http->postVariable( 'SearchText' );
+        $variables['position'] = $http->postVariable( 'position' );
+        
+        $tpl = eZTemplate::factory();
+        $tpl->setVariable( 'variables', $variables );
+        
+        $result['template'] = $tpl->fetch( 'design:xrowgis/curposlist.tpl' );
+        
+        //$geocoder = GeoCoder::getActiveGeoCoder();
+        //$geocoder->reverse( $variables['position']['longitude'], $variables['position']['latitude'] );
+
+        $result['address'] = $geocoder->address;
+
+        // _val_:"recip( sqedist( subattr_route_end___coordinates____gpt, vector( 52.3919800, 9.7099700 ) ), 1, 1, 0 )"*:* AND meta_available_language_codes_ms:* AND meta_class_identifier_ms:route
+        return $result;
+    }
 
 }
