@@ -16,7 +16,7 @@ class ezfSolrDocumentFieldxrowGIS extends ezfSolrDocumentFieldBase
     public static $subattributesDefinition = array( 
         'coordinates' => 'geopoint',
         'location' => 'location',
-        self::DEFAULT_SUBATTRIBUTE => 'string' 
+        self::DEFAULT_SUBATTRIBUTE => 'text' 
     );
     
     /**
