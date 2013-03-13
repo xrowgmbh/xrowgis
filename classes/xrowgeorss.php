@@ -65,7 +65,7 @@ class xrowGEORSS
                     }
                     
                     $NodeID = $node->attribute('node_id');
-                    
+                    $item->node_id = $NodeID;
                     $LanguageCode = false;
                     $ViewMode = 'popup';
                     
