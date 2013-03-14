@@ -10,5 +10,9 @@ $eZTemplateOperatorArray[] = array( 'script' => 'extension/xrowgis/autoloads/str
 $eZTemplateOperatorArray[] = array( 'script' => 'extension/xrowgis/autoloads/attribute_list.php',
                                     'class' => 'attributeListOperator',
                                     'operator_names' => array( 'list_by_attribute' ) );
+                                    
+$eZTemplateOperatorArray[] = array( 'script' => 'extension/xrowgis/autoloads/getDistance.php',
+                                    'class' => 'getDistanceOperator',
+                                    'operator_names' => array( 'get_dist' ) );
 
 ?>
