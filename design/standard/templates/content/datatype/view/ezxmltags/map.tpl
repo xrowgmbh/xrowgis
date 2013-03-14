@@ -1,4 +1,7 @@
-{def $url_array = $url|explode('://')}
+{def $url_array = $url|explode('://')
+     $theme = ezini("Assets","Theme","xrowgis.ini")
+     $default = ezini("Assets","DefaultIcon","xrowgis.ini")
+     $special = ezini("Assets","SpecialIcon","xrowgis.ini")}
 {if $url_array.0|eq('eznode')}
     {set $url = concat('xrowgis/georss/', $url_array.1)|ezurl('no', 'full')}
 {/if}
@@ -16,7 +19,7 @@
                         {literal}
                         style="display:none;"
                         data-mapname="POIMap"
-                        data-mapoptions='{"generals" : {"units" : "m", "projection" : "EPSG:25832"}, "mapview" : {"controls" : ["Navigation", "PanPanel", "ZoomPanel", "Attribution"], "controlOptions" : {"Attribution" : {"displayClass":"{/literal}{$displayClass}{literal}"}}, "zoom":"16"}, "theme" : "/extension/hannover/design/hannover/stylesheets/openlayers-custom.css" , "icon" : {"src" : "/extension/hannover/design/hannover/images/openlayers-custom/marker.png", "height" : "64", "width" : "24", "xoffset" : -12, "yoffset" : -32}}'>
+                        data-mapoptions='{"generals" : {"units" : "m", "projection" : "EPSG:25832"}, "mapview" : {"controls" : ["Navigation", "PanPanel", "ZoomPanel", "Attribution"], "controlOptions" : {"Attribution" : {"displayClass":"{/literal}{$displayClass}{literal}"}}, "zoom":"16"}, "theme" : "{/literal}{$theme}{literal}", "assets" : {"icon" : {/literal}{$default}{literal}, "curPos" : {/literal}{$special.curPos}{literal}}}'>
                        {/literal}
                        {switch match=$layer}
                            {case match='OSM'}
