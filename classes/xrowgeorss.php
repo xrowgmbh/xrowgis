@@ -72,12 +72,11 @@ class xrowGEORSS
                     $Result = eZNodeviewfunctions::generateNodeViewData( $tpl, $node, $node->attribute( 'object' ), $LanguageCode, $ViewMode, false );
                     
                     $item->description = $Result['content'];
-                    $this->point->setLongLat( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude, $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude );
-                    $this->point->convertLLtoTM();
                     
+					$this->point->setLongLat( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude, $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude );
+                    $this->point->convertLLtoTM();
                     ezcFeed::registerModule( 'GeoRss', 'ezcFeedGeoRssModule', 'georss' );
                     $module = $item->addModule( 'GeoRss' );
-                    
                     $module->lat = $this->point->utmNorthing;
                     $module->long = $this->point->utmEasting;
                 }
