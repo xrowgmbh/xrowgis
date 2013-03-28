@@ -1,0 +1,10 @@
+--- extension/ezfind/classes/ezfsolrdocumentfieldname.php	2013-01-31 09:37:31.791026371 +0100
++++ extension/ezfind/classes/ezfsolrdocumentfieldname.php	2013-01-31 09:37:05.344313065 +0100
+@@ -153,6 +153,7 @@
+                                   'tdate' => 'tdt',
+                                   'geopoint' => 'gpt',
+                                   'geohash' => 'gh',
++                                  'location' => 'loc',
+                                   'mstring' => 'ms',
+                                   'mtext' => 'mt',
+                                   'texticu' => 'tu');
