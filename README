@@ -1,0 +1,57 @@
+If you want to index your geo Content with solr/ ezfind please follow the instructions (source: https://docs.google.com/document/d/1uHjLy550dsgpzIR6d5jdjcmKA__rRuXj6Ka5SQcRszg/edit?pli=1#) below
+Step 1: Expand Solr schema.xml
+
+1. Locate the Solr schema.xml file:
+You should find this file in your eZ Find extension folder under /extension/ezfind/java/solr/conf/schema.xml.
+If you have a Solr Multicore setup, you have to change all of your schema.xml files under /extension/ezfind/java/solr.multicore/...
+
+2. Check / add fieldtype definition:
+Look for the the following field type definition in your schema.xml file:
+<fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate"/>
+
+If the field type definition already exists, everything is fine and you can go on. Otherwise, search for the following geopoint field type definition:
+<fieldType name="geopoint" class="solr.PointType" dimension="2" subFieldType="double"/>
+
+And add the location field type definition below the geopoint definition:
+<fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate"/>
+
+3. Add dynamic field definition:
+Search for the geopoint dynamic field definition in your solr schema.xml file:
+<!-- geopoint for geospatial/location searches, boosting, ... -->
+<dynamicField name="*_gpt" type="geopoint"  indexed="true"  stored="true"/>
+
+And add the following dynamic field type definition below:
+
+<!-- location for geospatial search -->
+<dynamicField name="*_loc" type="location"  indexed="true"  stored="true"/>
+<dynamicField name="*_loc_0_coordinate" type="double"  indexed="true"  stored="true"/>
+<dynamicField name="*_loc_1_coordinate" type="double"  indexed="true"  stored="true"/>
+
+4. Add dynamic field definition:
+Search for the geopoint dynamic field definition in your solr schema.xml file:
+<!-- geopoint for geospatial/location searches, boosting, ... -->
+<dynamicField name="*____gpt" type="geopoint"  indexed="true"  stored="true" multiValued="true"/>
+
+And add the following dynamic field type definition below:
+
+<!-- location for geospatial search -->
+<dynamicField name="*____loc" type="location"  indexed="true"  stored="true"/>
+<dynamicField name="*____loc_0_coordinate" type="double"  indexed="true"  stored="true"/>
+<dynamicField name="*____loc_1_coordinate" type="double"  indexed="true"  stored="true"/>
+________________
+Step 2: Expand eZ Find field type map
+You can apply the patch located in the patches folder, or do the following:
+
+Open ezfind/classes/ezfsolrdocumentfieldname.php with an editor. Search for “static $FieldTypeMap” and add “'location' => 'loc'” to the array definition:
+
+...
+static $FieldTypeMap = array( 'int' => 'i',
+                                                …
+                                                'geohash' => 'gh',
+                                                'location' => 'loc',
+                                                'mstring' => 'ms',
+                                                'mtext' => 'mt',
+                                                'texticu' => 'tu');
+…
+
+Save the file.
