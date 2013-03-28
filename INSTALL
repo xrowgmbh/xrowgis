@@ -1,4 +1,4 @@
-INSTALL:
+﻿INSTALL:
 1.) Add ezxgis_position table to your database (sql/mysql/schema.sql)
 2.) Copy over and modify xrowgis.ini
 3.) activate extension
