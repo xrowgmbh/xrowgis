@@ -47,16 +47,16 @@ ________________
 Step 2: Expand eZ Find field type map
 You can apply the patch located in the patches folder, or do the following:
 
-Open ezfind/classes/ezfsolrdocumentfieldname.php with an editor. Search for “static $FieldTypeMap” and add “'location' => 'loc'” to the array definition:
+Open ezfind/classes/ezfsolrdocumentfieldname.php with an editor. Search for "static $FieldTypeMap" and add "'location' => 'loc'" to the array definition:
 
 ...
 static $FieldTypeMap = array( 'int' => 'i',
-                                                …
+                                               ...
                                                 'geohash' => 'gh',
                                                 'location' => 'loc',
                                                 'mstring' => 'ms',
                                                 'mtext' => 'mt',
                                                 'texticu' => 'tu');
-…
+...
 
 Save the file.
