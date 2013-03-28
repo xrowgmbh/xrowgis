@@ -3,7 +3,7 @@ INSTALL:
 2.) Copy over and modify xrowgis.ini
 3.) activate extension
 
-If you want to index your geo Content with solr/ ezfind please follow the instructions (source: https://docs.google.com/document/d/1uHjLy550dsgpzIR6d5jdjcmKA__rRuXj6Ka5SQcRszg/edit?pli=1#) below:
+If you want to index your geo Content with solr\/ ezfind please follow the instructions (source: https://docs.google.com/document/d/1uHjLy550dsgpzIR6d5jdjcmKA__rRuXj6Ka5SQcRszg/edit?pli=1#) below:
 Step 1: Expand Solr schema.xml
 
 1. Locate the Solr schema.xml file:
@@ -47,16 +47,16 @@ ________________
 Step 2: Expand eZ Find field type map
 You can apply the patch located in the patches folder, or do the following:
 
-Open ezfind/classes/ezfsolrdocumentfieldname.php with an editor. Search for “static $FieldTypeMap” and add “'location' => 'loc'” to the array definition:
+Open ezfind/classes/ezfsolrdocumentfieldname.php with an editor. Search for ï¿½static $FieldTypeMapï¿½ and add ï¿½'location' => 'loc'ï¿½ to the array definition:
 
 ...
 static $FieldTypeMap = array( 'int' => 'i',
-                                                …
+                                                ï¿½
                                                 'geohash' => 'gh',
                                                 'location' => 'loc',
                                                 'mstring' => 'ms',
                                                 'mtext' => 'mt',
                                                 'texticu' => 'tu');
-…
+ï¿½
 
 Save the file.
