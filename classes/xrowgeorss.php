@@ -19,15 +19,11 @@ class xrowGEORSS
         
         if ( $parent instanceof eZContentObject )
         {
-            $user = eZUser::fetch(eZUser::anonymousId());
-            $localVars = array( "cacheFileArray", "NodeID",   "Module", "tpl",
-            "LanguageCode",   "ViewMode", "Offset", "ini",
-            "cacheFileArray", "viewParameters",  "collectionAttributes",
-            "validation" );
             $tpl = eZTemplate::factory();
             $treeNodes = self::fetchTreeNode();
             $this->feed = new ezcFeed();
             $this->point = new gPoint();
+            $collectionAttributes = array();
             
             $this->feed->generator = eZSys::serverURL();
             $link = '/xrowgis/georss/' . $this->nodeID;
@@ -36,7 +32,7 @@ class xrowGEORSS
             $this->feed->link = eZSys::serverURL();
             $this->feed->description = 'GEORSS Feed Channel';
             $this->feed->language = eZLocale::currentLocaleCode();
-            
+
             foreach ( $treeNodes as $node )
             {
                 $dm = $node->dataMap();
@@ -45,7 +41,7 @@ class xrowGEORSS
                     $item = $this->feed->add( 'item' );
                     $item->title = $node->getName();
                     $link = $node->attribute( 'url_alias' );
-                    $item->link = self::transformURI( $link, true, 'full' );
+                    $collectionAttributes['GeoRSS']['link'] = $node->attribute( 'url_alias' );
                     $item->id = self::transformURI( $link, true, 'full' );
                     
                     if ( $dm[$this->cache['cache'][$node->classIdentifier()]['default']]->attribute( 'has_content' ) )
@@ -64,17 +60,61 @@ class xrowGEORSS
                         }
                     }
                     
-                    $NodeID = $node->attribute('node_id');
-                    $item->node_id = $NodeID;
-                    $LanguageCode = false;
-                    $ViewMode = 'popup';
+                    if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']] instanceof eZContentObjectAttribute )
+                    {
+                        if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'has_content' ) )
+                        {
+                            if ( ( $content = $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'content' ) ) instanceof eZContentObject )
+                            {
+                                $imageID = $content->attribute( 'id' );
+                            }
+                            else
+                            {
+                                $imageID = $content['relation_list'][0]['contentobject_id'];
+                            }
+                            if ( ( $imageObject = eZContentObject::fetch( $imageID ) ) instanceof eZContentObject && $imageObject->canRead() )
+                            {
+                                $imageObject = $imageObject->dataMap();
+                                foreach ( $imageObject as $coAttribute )
+                                {
+                                    if ( $coAttribute->attribute( 'data_type_string' ) == eZImageType::DATA_TYPE_STRING )
+                                    {
+                                        if ( $coAttribute->content()->attribute( 'is_valid' ) )
+                                        {
+                                            $content = $coAttribute->content();
+                                            if ( ! empty( $this->cache['cache'][$node->classIdentifier()]['imageAlias'] ) || $this->cache['cache'][$node->classIdentifier()]['image'] != 'original' )
+                                            {
+                                                $prefix = "_{$this->cache['cache'][$node->classIdentifier()]['imageAlias']}";
+                                                $content->imageAlias( $this->cache['cache'][$node->classIdentifier()]['imageAlias'] );
+                                            }
+                                            $image = eZSys::instance()->serverURL() . '/' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["dirpath"] . '/' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["basename"] . $prefix . '.' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["suffix"];
+                                            $collectionAttributes['GeoRSS']['image'] = array( 
+                                                'src' => $image , 
+                                                'class' => $this->cache['cache'][$node->classIdentifier()]['imageStyle'] , 
+                                                'alt' => $coAttribute->content()->attribute( 'alternative_text' ) 
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if ( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_type_string' ) == eZXMLTextType::DATA_TYPE_STRING )
+                    {
+                        $outputHandler = new xrowRSSOutputHandler( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_text' ), false );
+                        $collectionAttributes['GeoRSS']['description'] = $outputHandler->outputText();
+                    }
+                    else
+                    {
+                        $collectionAttributes['GeoRSS']['description'] = htmlspecialchars( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'content' ) );
+                    }
                     
-                    $Result = eZNodeviewfunctions::generateNodeViewData( $tpl, $node, $node->attribute( 'object' ), $LanguageCode, $ViewMode, false );
-                    
+                    $Result = eZNodeviewfunctions::generateNodeViewData( $tpl, $node, $node->attribute( 'object' ), false, 'popup', false, array(), $collectionAttributes );
                     $item->description = $Result['content'];
                     
-					$this->point->setLongLat( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude, $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude );
+                    $this->point->setLongLat( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude, $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude );
                     $this->point->convertLLtoTM();
+                    
                     ezcFeed::registerModule( 'GeoRss', 'ezcFeedGeoRssModule', 'georss' );
                     $module = $item->addModule( 'GeoRss' );
                     $module->lat = $this->point->utmNorthing;
@@ -91,7 +131,7 @@ class xrowGEORSS
         $params = array();
         $params['ClassFilterType'] = 'include';
         $params['ClassFilterArray'] = $this->cache['class_identifier'];
-
+        
         if ( ( is_array( $treeNode = eZContentObjectTreeNode::subTreeByNodeID( $params, $this->nodeID ) ) ) && ! empty( $treeNode ) )
         {
             return $treeNode;
