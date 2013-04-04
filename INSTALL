@@ -2,6 +2,7 @@
 1.) Add ezxgis_position table to your database (sql/mysql/schema.sql)
 2.) Copy over and modify xrowgis.ini
 3.) activate extension
+4.) regenerate autoloads (of course)
 
 If you want to index your geo Content with solr/ ezfind please follow the instructions (source: https://docs.google.com/document/d/1uHjLy550dsgpzIR6d5jdjcmKA__rRuXj6Ka5SQcRszg/edit?pli=1#) below:
 Step 1: Expand Solr schema.xml

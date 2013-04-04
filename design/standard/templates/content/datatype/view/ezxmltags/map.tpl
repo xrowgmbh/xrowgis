@@ -58,6 +58,7 @@
                             data-layersettings='{}'
                             data-layerparams='{"tiled" : true}'
                             data-layeroptions='{"isBaseLayer" : false, "visibility" : true}'
+							data-layerlisteners='{}'
                             data-features='{"featureType" : "GeoRSS"}'
                             data-default="active" 
                             data-layername="GeoRSS" >GeoRSS</li>

@@ -59,10 +59,8 @@ POIMap.prototype.start = function(element) {
                 this.map.selectLayers.push(this.map.featureLayers[i].layer);
                 //add Linkage between contentobject an Feature on layer
                 this.map.featureLayers[i].layer.events.register('featureadded', this.map.featureLayers[i].layer, function(event){
-//                    this.map.featureLinkage[$($(event.feature.attributes.description)[0]).data().id] = event.feature.geometry.id;
                 this.map.featureLinkage[$($(event.feature.attributes.description)[0]).data().id] = event.feature.id;
                 });
-                this.map.featureLinkage['loaded'] = true;
               break;
             case 'GPX':
                 that = this;
@@ -161,7 +159,7 @@ function initPopups()
                     }
                     
                     this.featureLonLat = new OpenLayers.LonLat(this.pos.x, this.pos.y);
-                    //this.map.setCenter(this.featureLonLat, 16);
+//                    this.map.setCenter(this.featureLonLat, 16);
                     
                     if (typeof this.popup != "undefined" && this.popup != null) {
                         this.map.removePopup(this.popup);

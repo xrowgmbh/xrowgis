@@ -45,12 +45,6 @@ XROWMap.prototype.init = function(element) {
         $(element).width(this.mapOptions.mapview.width);
     }
     
-    //get configurations file contents
-    /*jQuery.ez('xrowGIS_page::getINI',{},
-            function(result) {
-                window.map.config.ini = result.content.BlockValues;
-                
-    });*/
     // initalize map Object
     this.map = new OpenLayers.Map(
                 {
@@ -77,6 +71,7 @@ XROWMap.prototype.init = function(element) {
 
     //create Layers
     map = this.map;
+    
     $(this.config).find('li').each(function(index, value)
     {
         if($(this).data().service == 'Vector')
@@ -145,6 +140,16 @@ XROWMap.prototype.init = function(element) {
                     'layer' : this.layer
             }
             ++x;
+        }
+        //are there eventlistener we have to add to the Layer?!
+        if(typeof($(this).data().layerlisteners) != 'undefined')
+        {
+            tmp = $(this).data().layerlisteners.eventListeners;
+            for( property in $(this).data().layerlisteners.eventListeners ) { 
+                this.layer.events.register(property, this.layer, function(event){
+                    eval(tmp[property]+'();');
+                });
+            }
         }
         map.addLayer(this.layer);
     });
@@ -301,6 +306,7 @@ function zoomEnd()
             });
     
 }
+
 function stringify(jsonData) {
     var strJsonData = '{', itemCount = 0, temp;
 
