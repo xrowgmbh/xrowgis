@@ -161,7 +161,7 @@ function initPopups()
                     }
                     
                     this.featureLonLat = new OpenLayers.LonLat(this.pos.x, this.pos.y);
-                    this.map.setCenter(this.featureLonLat, 16);
+                    //this.map.setCenter(this.featureLonLat, 16);
                     
                     if (typeof this.popup != "undefined" && this.popup != null) {
                         this.map.removePopup(this.popup);
@@ -171,7 +171,7 @@ function initPopups()
                             new OpenLayers.Size(200, 200), 
                             feature.attributes.description,
                             null, 
-                            false
+                            true
                         );
                     this.popup.calculateRelativePosition = function () {
                         return 'br';
