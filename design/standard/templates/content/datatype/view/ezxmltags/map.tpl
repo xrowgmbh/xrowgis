@@ -1,3 +1,4 @@
+<!--If you need to add eventListeners to your layers -> data-layerlisteners='{"eventListeners" : {"loadend" : "layerLoaded", "visibilitychanged" : "layerLoaded"}}' -->
 {def $url_array = $url|explode('://')
      $serviceURL = ezini("DataServices","ServiceURL","xrowgis.ini")
      $displayClass = ezini("Two-Col-Map","DisplayClass","xrowgis.ini")
