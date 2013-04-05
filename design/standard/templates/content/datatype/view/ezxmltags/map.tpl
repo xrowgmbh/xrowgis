@@ -1,4 +1,7 @@
 {def $url_array = $url|explode('://')
+     $serviceURL = ezini("DataServices","ServiceURL","xrowgis.ini")
+     $displayClass = ezini("Two-Col-Map","DisplayClass","xrowgis.ini")
+     $attributionText = ezini("Two-Col-Map","AttributionText","xrowgis.ini")
      $theme = ezini("Assets","Theme","xrowgis.ini")
      $default = ezini("Assets","DefaultIcon","xrowgis.ini")
      $special = ezini("Assets","SpecialIcon","xrowgis.ini")}
@@ -26,7 +29,7 @@
                            {literal}
                                <li class="baseLayer" 
                                     data-service="OSM"
-                                    data-url="http://admin.hannover.de/osm-tiles/${z}/${x}/${y}.png"
+                                    data-url="{/literal}{$serviceURL.OSM}{literal}"
                                     data-projection='{"displayProjection" : "EPSG:900913", "projection" : "EPSG:4326"}'
                                     data-layerparams='{}'
                                     data-layeroptions='{"isBaseLayer" : true}'
@@ -39,14 +42,14 @@
                                 {literal}
                                 <li class="baseLayer"
                                     data-service="WMS"
-                                    data-url="http://admin.hannover.de/geoserver/Hannover/wms"
+                                    data-url="{/literal}{$serviceURL.WMS}{literal}"
                                     data-layersettings='{"maxExtent" : "new OpenLayers.Bounds(516000, 5774000, 590000, 5838000)", "scales" : "[4000, 6000, 8000, 10000, 15000]"}'
                                     data-projection='{"displayProjection" : "EPSG:25832", "projection" : "EPSG:4326"}'
                                     data-layerparams='{"layers" : "Hannover", "format" : "image/png", "tiled": true}'
                                     data-layeroptions='{"isBaseLayer" : true, "attribution" : "&copy; {/literal}{concat(currentdate()|datetime( 'custom', '%Y' ), ', ' , $attributionText)}{literal}"}'
                                     data-layerzoom="4"
                                     data-default="active" 
-                                    data-layername="Hannover" >Region Hannover</li>
+                                    data-layername="WMS" >WMS</li>
                                 {/literal}
                             {/case}
                         {/switch}
@@ -58,7 +61,6 @@
                             data-layersettings='{}'
                             data-layerparams='{"tiled" : true}'
                             data-layeroptions='{"isBaseLayer" : false, "visibility" : true}'
-							data-layerlisteners='{}'
                             data-features='{"featureType" : "GeoRSS"}'
                             data-default="active" 
                             data-layername="GeoRSS" >GeoRSS</li>

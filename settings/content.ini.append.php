@@ -12,15 +12,8 @@ AvailableDataTypes[]=xrowgpx
 #IsInline[map]=true
 
 #[map]
-#AvailableClasses[]
-#AllowEmpty=true
-#CustomAttributes[]=node_id
-#CustomAttributes[]=classes
-#CustomAttributes[]=width
-#CustomAttributes[]=height
-#CustomAttributes[]=centerposition
-#CustomAttributes[]=zoom
-#CustomAttributes[]=icon
+#CustomAttributes[]=url
+#CustomAttributes[]=layer
 
 #[RelationGroupSettings]
 #DefaultGroup=articles
