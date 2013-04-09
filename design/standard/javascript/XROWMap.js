@@ -44,7 +44,6 @@ XROWMap.prototype.init = function(element) {
     {
         $(element).width(this.mapOptions.mapview.width);
     }
-    
     // initalize map Object
     this.map = new OpenLayers.Map(
                 {
@@ -65,7 +64,6 @@ XROWMap.prototype.init = function(element) {
         {
             options[i] = eval(this.mapOptions.mapoptions[i]);
         }
-        
         this.map.setOptions(options);
     }
 
@@ -219,9 +217,6 @@ $(document).ready(function() {
             case 'POIMap':
                 map = new POIMap();
                 break;
-            case 'ROUTEMap':
-                map = new ROUTEMap();
-                break;
             default:
                 map = new XROWMap();
                 $.data($(this)[0], 'render', 'true');// render the default Map
@@ -285,44 +280,3 @@ $(document).ready(function() {
             }
             );
 });
-
-function mapSearch()
-{
-    jQuery.ez('xrowGIS_page::updateMap',{'input': $("input.global-map-search").val(), 'mapsearch' : true},
-            function(result) {
-                position  = {'coords' : {'longitude' : result.content.lon, 'latitude' : result.content.lat}};
-                handle_geolocation_query(position);
-    });
-}
-
-function zoomEnd()
-{
-    $.each(this.layers, function(index, value)
-            {
-                if(value.isBaseLayer == "false" || value.isBaseLayer == false)
-                {
-                    value.redraw();
-                }
-            });
-    
-}
-
-function stringify(jsonData) {
-    var strJsonData = '{', itemCount = 0, temp;
-
-    for (var item in jsonData) {
-        if (itemCount > 0) {
-            strJsonData += ', ';
-        }
-    temp = jsonData[item];
-    if (typeof(temp) == 'object') {
-        s =  stringify(temp);   
-    } else {
-        s = '"' + temp + '"';
-    }   
-    strJsonData += '"' + item + '":' + s;
-        itemCount++;
-    }
-    strJsonData += '}';
-    return strJsonData;
-}

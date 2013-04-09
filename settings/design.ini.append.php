@@ -12,7 +12,6 @@ BackendJavaScriptList[]=OpenLayers/OpenLayers.js
 FrontendJavaScriptList[]=OpenLayers/OpenLayers.js
 FrontendJavaScriptList[]=XROWMap.js
 FrontendJavaScriptList[]=POIMap.js
-FrontendJavaScriptList[]=ROUTEMap.js
 FrontendJavaScriptList[]=xrowGISUtils.js
 BackendJavaScriptList[]=xrowgis.js
 
