@@ -1,5 +1,5 @@
 <?php
-
+//TODO: Check if this is anywhere in use...if not mark it as deprecated or better remove it. SB
 class xrowGISTools
 {
 
@@ -16,9 +16,10 @@ class xrowGISTools
             AND ezcontentobject_tree.contentobject_id = ezcontentobject.id
             AND ezcontentobject.current_version = ezxgis_position.contentobject_attribute_version
             AND city != ''
-            AND ezcontentobject_tree.path_string LIKE '%/{$node->attribute('node_id')}/%'
+            AND ezcontentobject_tree.path_string LIKE '{$node->attribute('path_string')}%'
             GROUP BY city
             ORDER BY count desc", $params );
+        
         return $list;
     }
 }
