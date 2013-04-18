@@ -89,7 +89,7 @@ class OpenLayersGeoCoder extends GeoCoder
         if ( $this->reverse )
         {
             $reverseUrl = $gisini->variable( "OpenLayers", "ReverseUrl" );
-            $requestUrl = $reverseUrl . "?latlng=" . urlencode( $this->latitude ) . "," . urlencode( $this->longitude ) . "&sensor=false&bounds=" . $bounds . "";
+            $requestUrl = $reverseUrl . "?latlng=" . urlencode( $this->latitude ) . "," . urlencode( $this->longitude ) . "&sensor=false";
             
             $kml = new SimpleXMLElement( file_get_contents( $requestUrl ) );
             
