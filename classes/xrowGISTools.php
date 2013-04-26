@@ -10,16 +10,20 @@ class xrowGISTools
             return array();
         }
         $db = eZDB::instance();
+		$subselect = (!empty($params['object_state']))?"AND (SELECT contentobject_state_id FROM ezcobj_state_link where contentobject_id = ezcontentobject.id and contentobject_state_id = '{$params['object_state']}')" : '';
         $list = $db->arrayQuery( "SELECT city, count(city) as 'count' FROM ezxgis_position, ezcontentobject, ezcontentobject_attribute, ezcontentobject_tree
             WHERE ezxgis_position.contentobject_attribute_id = ezcontentobject_attribute.id
             AND ezcontentobject_attribute.contentobject_id = ezcontentobject.id
             AND ezcontentobject_tree.contentobject_id = ezcontentobject.id
             AND ezcontentobject.current_version = ezxgis_position.contentobject_attribute_version
             AND city != ''
-            AND ezcontentobject_tree.path_string LIKE '{$node->attribute('path_string')}%'
+            AND ezcontentobject_tree.path_string LIKE '{$node->attribute('path_string')}'
+			'{$subselect}'
             GROUP BY city
             ORDER BY count desc", $params );
         
         return $list;
     }
 }
+
+S

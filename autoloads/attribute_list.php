@@ -2,15 +2,12 @@
 
 class attributeListOperator
 {
-
     /*!
      Constructor
     */
     function attributeListOperator()
     {
-        $this->Operators = array( 
-            'list_by_attribute' 
-        );
+        $this->Operators = array( 'list_by_attribute' );
     }
 
     /*!
@@ -37,49 +34,34 @@ class attributeListOperator
     */
     function namedParameterList()
     {
-        return array( 
-            'list_by_attribute' => array( 
-                'attribute' => array( 
-                    'type' => 'string' , 
-                    'required' => true , 
-                    'default' => '' 
-                ) , 
-                'limit' => array( 
-                    'type' => 'string' , 
-                    'required' => false , 
-                    'default' => '' 
-                ) , 
-                'source' => array( 
-                    'type' => 'string' , 
-                    'required' => true , 
-                    'default' => '' 
-                )
-            ) 
-        );
-    }
+        return array( 'list_by_attribute' => array(   'attribute' => array( 'type' => 'string',
+                                                                     'required' => true,
+                                                                     'default' => '' ),
+		                                              'limit' => array( 'type' => 'string',
+		                                                                     'required' => true,
+		                                                                     'default' => '' ),
+        											  'source' => array( 'type' => 'string',
+	                                                                     'required' => true,
+	                                                                     'default' => '' ),
+													  'object_state' => array( 'type' => 'integer',
+	                                                                     'required' => false,
+	                                                                     'default' => '' ),
+		                                            ) );
+		    }
 
     /*!
      Executes the needed operator(s).
      Checks operator names, and calls the appropriate functions.
     */
-    function modify( &$tpl, &$operatorName, &$operatorParameters, &$rootNamespace, &$currentNamespace, &$operatorValue, &$namedParameters )
+    function modify( &$tpl, &$operatorName, &$operatorParameters, &$rootNamespace,
+                     &$currentNamespace, &$operatorValue, &$namedParameters )
     {
-        $node = eZContentObjectTreeNode::fetch( $namedParameters['source'] );
-        $resultArray = eZContentObjectTreeNode::subTreeByNodeID( array(), $node->attribute( 'node_id' ) );
-
-        $cityArray = array();
-        foreach ( $resultArray as $item )
-        {
-            $dm = $item->object()->dataMap();
-            $geoAttribute = $dm[xrowGIStype::DATATYPE_STRING]->attribute( 'content' );
-            if ( $geoAttribute instanceof xrowGISPosition )
-            {
-                if ( ! empty( $geoAttribute->city ) )
-                    $cityArray[] = $geoAttribute->city;
-            }
-        }
-        $operatorValue = array_unique( $cityArray );
-    
+    	$db = eZDB::instance();
+		$object_state = (!empty($namedParameters['limit']))?$namedParameters['limit']:null;
+    	$params = array( 'limit' => $namedParameters['limit'], 'offset' => 0, 'column' => 'city', $object_state );
+    	$node = eZContentObjectTreeNode::fetch($namedParameters['source']);
+        $attribute_list= xrowGISTools::citiesBySubtree($node, $params);
+		$operatorValue = $attribute_list;
 
     }
 }
