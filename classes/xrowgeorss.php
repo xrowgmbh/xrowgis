@@ -23,7 +23,6 @@ class xrowGEORSS
             $treeNodes = self::fetchTreeNode();
             $this->feed = new ezcFeed();
             $this->point = new gPoint();
-            $collectionAttributes = array();
             
             $this->feed->generator = eZSys::serverURL();
             $link = '/xrowgis/georss/' . $this->nodeID;
@@ -35,6 +34,7 @@ class xrowGEORSS
 
             foreach ( $treeNodes as $node )
             {
+				$collectionAttributes = array();
                 $dm = $node->dataMap();
                 if ( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'has_content' ) && ( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude != 0 || $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude != 0 ) )
                 {
@@ -42,6 +42,7 @@ class xrowGEORSS
                     $item->title = $node->getName();
                     $link = $node->attribute( 'url_alias' );
                     $collectionAttributes['GeoRSS']['link'] = $node->attribute( 'url_alias' );
+
                     $item->id = self::transformURI( $link, true, 'full' );
                     
                     if ( $dm[$this->cache['cache'][$node->classIdentifier()]['default']]->attribute( 'has_content' ) )
@@ -59,7 +60,7 @@ class xrowGEORSS
                             $this->cache['cache'][$node->classIdentifier()]['text'] = $this->cache['cache'][$node->classIdentifier()]['default'];
                         }
                     }
-                    
+
                     if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']] instanceof eZContentObjectAttribute )
                     {
                         if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'has_content' ) )
@@ -102,14 +103,14 @@ class xrowGEORSS
                     if ( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_type_string' ) == eZXMLTextType::DATA_TYPE_STRING )
                     {
                         $outputHandler = new xrowRSSOutputHandler( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_text' ), false );
-                        $collectionAttributes['GeoRSS']['description'] = $outputHandler->outputText();
+                        $collectionAttributes['GeoRSS']['description'] = htmlspecialchars($outputHandler->outputText());
                     }
                     else
                     {
                         $collectionAttributes['GeoRSS']['description'] = htmlspecialchars( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'content' ) );
                     }
-                    
                     $Result = eZNodeviewfunctions::generateNodeViewData( $tpl, $node, $node->attribute( 'object' ), false, 'popup', false, array(), $collectionAttributes );
+					
                     $item->description = $Result['content'];
                     
                     $this->point->setLongLat( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude, $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude );
