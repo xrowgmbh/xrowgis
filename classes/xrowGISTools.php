@@ -10,9 +10,13 @@ class xrowGISTools
         }
         $db = eZDB::instance();
 		$params['object_state'] = (int) $params['object_state'];
-		$subselect = ($params['object_state']!=null)?"AND (ezcobj_state_link.contentobject_id = ezcontentobject.id and ezcobj_state_link.contentobject_state_id = {$params['object_state']})" : '';
+		
+		$object_state = ($params['object_state']!=null) ? true : false;
+		
+		$subselect = ($object_state)?"AND (ezcobj_state_link.contentobject_id = ezcontentobject.id and ezcobj_state_link.contentobject_state_id = {$params['object_state']})" : "";
+		$additional_tables = ($object_state) ? ", ezcobj_state_link" : "";
 
-		$list = $db->arrayQuery( "SELECT city, count(city) as 'count' FROM ezxgis_position, ezcontentobject, ezcontentobject_attribute, ezcontentobject_tree, ezcobj_state_link
+		$list = $db->arrayQuery( "SELECT city, count(city) as 'count' FROM ezxgis_position, ezcontentobject, ezcontentobject_attribute, ezcontentobject_tree {$additional_tables}
             WHERE ezxgis_position.contentobject_attribute_id = ezcontentobject_attribute.id
             AND ezcontentobject_attribute.contentobject_id = ezcontentobject.id
             AND ezcontentobject_tree.contentobject_id = ezcontentobject.id
@@ -24,7 +28,7 @@ class xrowGISTools
 			{$subselect}
             GROUP BY city
             ORDER BY count desc", array('column' => 'city') );
-			
+
         return $list;
     }
 }
