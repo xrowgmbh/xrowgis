@@ -6,7 +6,8 @@ if ( ! isset( $Params['NodeID'] ) )
 {
     return $Module->handleError( eZError::KERNEL_NOT_FOUND, 'kernel' );
 }
-$xml = new xrowGEORSS( $Params['NodeID'] );
+
+$xml = new xrowGEORSS( $Params['NodeID'], isset( $Params['Tree'] ) ? ( $Params['Tree'] == 'false' ) ? false : true : true );
 if ( $xml->feed )
 {
     $xml = $xml->feed->generate( 'rss2' );
@@ -23,7 +24,7 @@ if ( $xml->feed )
     header( 'Content-Length: ' . strlen( $xml ) );
     
     while ( @ob_end_clean() );
-
+    
     echo $xml;
 }
 

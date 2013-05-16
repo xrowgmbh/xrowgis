@@ -5,7 +5,8 @@ $Module = array(
 $ViewList["georss"] = array( 
     "script" => "georss.php" , 
     'params' => array( 
-        'NodeID' 
+        'NodeID',
+        'Tree' 
     ) 
 );
 

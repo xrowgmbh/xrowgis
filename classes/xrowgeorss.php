@@ -3,13 +3,15 @@
 class xrowGEORSS
 {
     public $nodeID;
+    public $tree;
     public $feed;
     public $cache;
     public $point;
 
-    function __construct( $nodeID )
+    function __construct( $nodeID, $treeFetch )
     {
         $this->nodeID = $nodeID;
+        $this->tree = $treeFetch;
         self::generateGEORSSFeed();
     }
 
@@ -34,8 +36,9 @@ class xrowGEORSS
 
             foreach ( $treeNodes as $node )
             {
-				$collectionAttributes = array();
+                $collectionAttributes = array();
                 $dm = $node->dataMap();
+                
                 if ( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'has_content' ) && ( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude != 0 || $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude != 0 ) )
                 {
                     $item = $this->feed->add( 'item' );
@@ -110,7 +113,7 @@ class xrowGEORSS
                         $collectionAttributes['GeoRSS']['description'] = htmlspecialchars( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'content' ) );
                     }
                     $Result = eZNodeviewfunctions::generateNodeViewData( $tpl, $node, $node->attribute( 'object' ), false, 'popup', false, array(), $collectionAttributes );
-					
+                    
                     $item->description = $Result['content'];
                     
                     $this->point->setLongLat( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude, $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude );
@@ -133,7 +136,7 @@ class xrowGEORSS
         $params['ClassFilterType'] = 'include';
         $params['ClassFilterArray'] = $this->cache['class_identifier'];
         
-        if ( ( is_array( $treeNode = eZContentObjectTreeNode::subTreeByNodeID( $params, $this->nodeID ) ) ) && ! empty( $treeNode ) )
+        if ( ( is_array( $treeNode = eZContentObjectTreeNode::subTreeByNodeID( $params, $this->nodeID ) ) ) && ! empty( $treeNode ) && $this->tree)
         {
             return $treeNode;
         }

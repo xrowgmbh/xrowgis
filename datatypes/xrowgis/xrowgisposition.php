@@ -12,8 +12,16 @@ CREATE TABLE  `ezxgis_position` (
   `district` varchar(255) default NULL,
   `city` varchar(255) default NULL,
   `state` varchar(255) default NULL,
-  `country` varchar(255) default NULL
+  `country` varchar(255) default NULL,
+   PRIMARY KEY (contentobject_attribute_id,contentobject_attribute_version)
 )  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `ezxgis_position` 
+ADD INDEX `country` (`country` ASC),
+ADD INDEX `state` (`state` ASC),
+ADD INDEX `city` (`city` ASC),
+ADD INDEX `zip` (`zip` ASC),
+ADD INDEX `district` (`district` ASC);
 */
 
 class xrowGISPosition extends eZPersistentObject
