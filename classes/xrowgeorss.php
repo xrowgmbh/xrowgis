@@ -38,7 +38,7 @@ class xrowGEORSS
             {
                 $collectionAttributes = array();
                 $dm = $node->dataMap();
-                
+                if(empty($dm[$this->cache['cache'][$node->classIdentifier()]['gis']]))continue;
                 if ( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'has_content' ) && ( $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->latitude != 0 || $dm[$this->cache['cache'][$node->classIdentifier()]['gis']]->attribute( 'content' )->longitude != 0 ) )
                 {
                     $item = $this->feed->add( 'item' );
@@ -135,7 +135,8 @@ class xrowGEORSS
         $params = array();
         $params['ClassFilterType'] = 'include';
         $params['ClassFilterArray'] = $this->cache['class_identifier'];
-        
+        $params['Depth'] = 2;
+		
         if ( ( is_array( $treeNode = eZContentObjectTreeNode::subTreeByNodeID( $params, $this->nodeID ) ) ) && ! empty( $treeNode ) && $this->tree)
         {
             return $treeNode;
