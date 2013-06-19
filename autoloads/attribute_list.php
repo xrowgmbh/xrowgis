@@ -61,10 +61,6 @@ class attributeListOperator
     	$params = array( 'limit' => 0, 'offset' => 0, 'column' => 'city', 'object_state'=>$object_state );
     	$node = eZContentObjectTreeNode::fetch($namedParameters['source']);
         $attribute_list= xrowGISTools::citiesBySubtree($node, $params);
-		
 		$operatorValue = $attribute_list;
-
     }
 }
-
-?>
