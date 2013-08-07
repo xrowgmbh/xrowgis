@@ -16,7 +16,8 @@ class ezfSolrDocumentFieldxrowGIS extends ezfSolrDocumentFieldBase
     public static $subattributesDefinition = array( 
         'coordinates' => 'geopoint',
         'location' => 'location',
-        self::DEFAULT_SUBATTRIBUTE => 'string' 
+        'cityfacet' => 'mstring',
+        self::DEFAULT_SUBATTRIBUTE => 'text'
     );
     
     /**
@@ -51,6 +52,7 @@ class ezfSolrDocumentFieldxrowGIS extends ezfSolrDocumentFieldBase
             $data[self::getFieldName( $contentClassAttribute, self::DEFAULT_SUBATTRIBUTE )] = $this->ContentObjectAttribute->attribute( 'content' )->attribute( self::DEFAULT_SUBATTRIBUTE );
             $data[self::getFieldName( $contentClassAttribute, 'coordinates' )] = $this->ContentObjectAttribute->attribute( 'content' )->attribute( 'latitude' ).','.$this->ContentObjectAttribute->attribute( 'content' )->attribute( 'longitude' );
             $data[self::getFieldName( $contentClassAttribute, 'location' )] = $this->ContentObjectAttribute->attribute( 'content' )->attribute( 'latitude' ).','.$this->ContentObjectAttribute->attribute( 'content' )->attribute( 'longitude' );
+            $data[self::getFieldName( $contentClassAttribute, 'cityfacet' )] = $this->ContentObjectAttribute->attribute( 'content' )->attribute( self::DEFAULT_SUBATTRIBUTE );
         }
         return $data;
     }
