@@ -175,6 +175,7 @@ XROWMap.prototype.init = function(element) {
 
     // set center
     this.map.setCenter(this.lonLat, this.zoom);
+    
     // add controls
     if(typeof(this.mapOptions.mapview.controls)!='undefined')
     {
@@ -202,6 +203,8 @@ XROWMap.prototype.init = function(element) {
         this.map.addControl(new OpenLayers.Control.Navigation());
         this.map.addControl(new OpenLayers.Control.PanPanel());
         this.map.addControl(new OpenLayers.Control.ZoomPanel());
+        this.map.addControl(new OpenLayers.Control.Geolocate());
+        this.map.addControl(new OpenLayers.Control.Button());
     }
     // render the default Map
     if (this.options.render == 'true') {
@@ -216,6 +219,7 @@ $(document).ready(function() {
         switch ($(this).data().maptype) {
             case 'POIMap':
                 map = new POIMap();
+                poimap=map;
                 break;
             default:
                 map = new XROWMap();
@@ -225,47 +229,70 @@ $(document).ready(function() {
     });// ende each
     
     $("input.map-search").click(function()
-            {
-                mapSearch();
-            });
+    {
+        mapSearch();
+    });
     $('#map-search-form').submit(function()
-            {
-                mapSearch();
-            });
+    {
+        mapSearch();
+    });
+    
     $("input.current-position").click(function()
+    {
+        if (navigator.geolocation) {
+            initiate_geolocation();
+            }else {
+                error('not supported');
+            }
+    });
+    $(".olControlGeolocate").click(function()
+    {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position)
             {
-                if (navigator.geolocation) {
-                    initiate_geolocation();
-                }else {
-                    error('not supported');
+                if(position.coords.longitude != 0 && position.coords.latitude != 0)
+                {
+                    var lonLat = new Proj4js.Point(position.coords.longitude, position.coords.latitude);
+                    Proj4js.transform(new Proj4js.Proj(poimap.projection.projection), new Proj4js.Proj(poimap.projection.displayProjection), lonLat);
+                    currentPos = new OpenLayers.Layer.Markers("Current Position", {rendererOptions : {zIndexing : true}});
+                    poimap.map.addLayer(currentPos);
+                    currentPos.setZIndex( 1001 );
+                    lonLat = new OpenLayers.LonLat(lonLat.x, lonLat.y);
+                    currentPos.addMarker(new OpenLayers.Marker(lonLat, new OpenLayers.Icon(poimap.mapOptions.assets.curPos.src, new OpenLayers.Size(poimap.mapOptions.assets.curPos.width, poimap.mapOptions.assets.curPos.height))));
+                    poimap.map.setCenter(lonLat, poimap.zoom);
                 }
             });
+         }else {
+             error('not supported');
+         }
+    });
+   
     $(".click-list li :checkbox").click(function()
+    {
+        if($(this)[0].parentNode.layer.visibility===true && ($(this)[0].parentNode.layer.isBaseLayer===false || $(this)[0].parentNode.layer.isBaseLayer=='false'))
         {
-            if($(this)[0].parentNode.layer.visibility===true && ($(this)[0].parentNode.layer.isBaseLayer===false || $(this)[0].parentNode.layer.isBaseLayer=='false'))
+            if(typeof(window.map.map.layerLinkage[$(this)[0].parentNode.layer.id]) != 'undefined')
             {
-                if(typeof(window.map.map.layerLinkage[$(this)[0].parentNode.layer.id]) != 'undefined')
+                $(window.map.map.layerLinkage[$(this)[0].parentNode.layer.id]).each(function(index, value)
                 {
-                    $(window.map.map.layerLinkage[$(this)[0].parentNode.layer.id]).each(function(index, value)
-                            {
-                                window.map.map.getLayersByName(value)[0].setVisibility(false);
-                            });
-                }
-                $(this)[0].parentNode.layer.setVisibility(false);
-            }else
-            {
-                if(typeof(window.map.map.layerLinkage[$(this)[0].parentNode.layer.id]) != 'undefined')
-                {
-                    $(window.map.map.layerLinkage[$(this)[0].parentNode.layer.id]).each(function(index, value)
-                            {
-                                window.map.map.getLayersByName(value)[0].setVisibility(true);
-                            });
-                }
-                $(this)[0].parentNode.layer.setVisibility(true);
+                     window.map.map.getLayersByName(value)[0].setVisibility(false);
+                });
             }
-        });
+            $(this)[0].parentNode.layer.setVisibility(false);
+        }else
+        {
+            if(typeof(window.map.map.layerLinkage[$(this)[0].parentNode.layer.id]) != 'undefined')
+            {
+                $(window.map.map.layerLinkage[$(this)[0].parentNode.layer.id]).each(function(index, value)
+                {
+                    window.map.map.getLayersByName(value)[0].setVisibility(true);
+                });
+            }
+            $(this)[0].parentNode.layer.setVisibility(true);
+         }
+    });
     $(".click-list input[type=checkbox]").each(
-            function() {
+        function() {
                 if($(this)[0].checked === true)
                 {
                     if(typeof(window.map.map.layerLinkage[$(this)[0].parentElement.layer.id]) != 'undefined')
@@ -278,5 +305,5 @@ $(document).ready(function() {
                     $(this)[0].parentElement.layer.setVisibility(true);
                 }
             }
-            );
+      );
 });
