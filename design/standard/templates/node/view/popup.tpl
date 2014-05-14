@@ -7,5 +7,5 @@
 {if is_set( $collection_attributes.GeoRSS.description )}
     <p>{$collection_attributes.GeoRSS.description}</p>
 {/if}
-<a href={$collection_attributes.GeoRSS.link|ezurl('double', 'full')}>{'more'|i18n('extension/xrowgis')}...</a>
+<a href={$collection_attributes.GeoRSS.link|ezurl('no', 'full')}>{'more'|i18n('extension/xrowgis')}...</a>
 {undef}
