@@ -223,6 +223,7 @@ $(document).ready(function() {
                 break;
             default:
                 map = new XROWMap();
+                poimap = map;
                 $.data($(this)[0], 'render', 'true');// render the default Map
             }
         map.start($(this)[0]);
