@@ -8,10 +8,10 @@ XROWMap.prototype.init = function(element) {
     this.map, this.layer, this.styledPoint, this.lonLat, this.markers, this.params={}, this.layerOptions={};
     this.options = $.data(element);
     this.config = $('.'+this.options.config);
-    this.mapOptions=this.config.data('mapoptions');
+    this.mapOptions = this.config.data('mapoptions');
+    this.mapsearch = this.config.data('mapsearch');
     this.projection = $(this.config).find('.baseLayer').data().projection;
     this.layerzoom = $(this.config).find('.baseLayer').data().layerzoom;
-    
     Proj4js.defs["EPSG:25832"] = "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs";
     OpenLayers.Layer.GML = OpenLayers.Class(OpenLayers.Layer.GML, {requestFailure:false});
     OpenLayers.ImgPath = "/extension/xrowgis/design/standard/javascript/OpenLayers/img/";
@@ -44,6 +44,29 @@ XROWMap.prototype.init = function(element) {
     {
         $(element).width(this.mapOptions.mapview.width);
     }
+    
+    //mapSearch
+
+    if( typeof(this.mapsearch)!='undefined' && this.mapsearch == true)
+    {
+        $(element).prepend('<form onsubmit="return false;" class="map_search_form"><input type="text" name="SearchText" value="" placeholder="'+ $(element).data("searchtext_placeholder") +'" size="30" /><input type="button" title="'+ $(element).data("searchbutton_title") +'"/></form>');
+        $(element).find("form.map_search_form").submit(function(){
+            mapAddressSearch( $(this).find("input[type=text]") );
+        }).find("input[type=button]").click(function(){
+            mapAddressSearch( $(this).parent().find("input[type=text]") );
+        });
+    }
+    
+    //For fullscreen
+    $(".olControlButton").live("click",function(){
+        if ( $(this).hasClass("exit") ) {
+            $(this).removeClass("exit").closest(".custom_map").fullScreen(false);
+        }
+        else {
+            $(this).addClass("exit").closest(".custom_map").fullScreen(true);
+        }
+    });
+
     // initalize map Object
     this.map = new OpenLayers.Map(
                 {
@@ -234,6 +257,11 @@ $(document).ready(function() {
         mapSearch();
     });
     $('#map-search-form').submit(function()
+    {
+        mapSearch();
+    });
+    
+    $('.search_form').submit(function()
     {
         mapSearch();
     });

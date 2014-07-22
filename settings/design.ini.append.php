@@ -13,6 +13,7 @@ FrontendJavaScriptList[]=OpenLayers/OpenLayers.js
 FrontendJavaScriptList[]=XROWMap.js
 FrontendJavaScriptList[]=POIMap.js
 FrontendJavaScriptList[]=xrowGISUtils.js
+FrontendJavaScriptList[]=jquery.fullscreen-min.js
 BackendJavaScriptList[]=xrowgis.js
 
 */?>

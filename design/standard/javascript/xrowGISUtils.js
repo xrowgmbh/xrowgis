@@ -141,7 +141,7 @@ function popupDestroy(e) {
 }
 
 function initiate_geolocation() {
-    navigator.geolocation.getCurrentPosition(handle_geolocation_query);  
+    navigator.geolocation.getCurrentPosition(handle_geolocation_query);
 }  
 
 function handle_geolocation_query(position){
@@ -160,7 +160,7 @@ function handle_geolocation_query(position){
         currentPos.addMarker(new OpenLayers.Marker(lonLat, new OpenLayers.Icon(window.map.mapOptions.assets.curPos.src, new OpenLayers.Size(window.map.mapOptions.assets.curPos.width, window.map.mapOptions.assets.curPos.height))));
         window.map.map.setCenter(lonLat, window.map.zoom);
     }
-} 
+}
 
 function handleGISRequests(initialPoint)
 {
@@ -196,7 +196,17 @@ function handleGISRequests(initialPoint)
 
 function mapSearch()
 {
+    //deprecated
     jQuery.ez('xrowGIS_page::updateMap',{'input': $("input.global-map-search").val(), 'mapsearch' : true},
+            function(result) {
+                position  = {'coords' : {'longitude' : result.content.lon, 'latitude' : result.content.lat}};
+                handle_geolocation_query(position);
+    });
+}
+
+function mapAddressSearch(inputText) {
+    window.console.log(this);
+    jQuery.ez('xrowGIS_page::updateMap',{'input': $(inputText).val(), 'mapsearch' : true},
             function(result) {
                 position  = {'coords' : {'longitude' : result.content.lon, 'latitude' : result.content.lat}};
                 handle_geolocation_query(position);

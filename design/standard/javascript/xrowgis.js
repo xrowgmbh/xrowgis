@@ -8,10 +8,10 @@
     };
 })(jQuery);
 
-(function () {
-	OpenLayers.ImgPath = "/extension/xrowgis/design/standard/javascript/OpenLayers/img/";
+(function ( $ ) {
+    OpenLayers.ImgPath = "/extension/xrowgis/design/standard/javascript/OpenLayers/img/";
     var methods = {
-    		createMap : function (options) {
+            createMap : function (options) {
                 var controls,
                     map = new OpenLayers.Map({
                     div : 'mapContainer_'+options.attributeID,
@@ -63,14 +63,14 @@
             map.setCenter(lonLat, options.zoom);
             map.addControl(new OpenLayers.Control.MousePosition());
 
-            if((options.lat == '' || options.lon == '' || options.lat == 0 || options.lon == 0) && jQuery('#xrowGIS-rel_'+options.attributeID).val()=='noRel')
+            if((options.lat == '' || options.lon == '' || options.lat == 0 || options.lon == 0) && $('#xrowGIS-rel_'+options.attributeID).val()=='noRel')
             {
-                jQuery.ajaxSetup({async : false});
-                jQuery().servemap('setMapCenter', options);
-                jQuery('#recomContainer_'+options.attributeID).css('display', 'none');
-                jQuery('#xrowGIS-lon_'+options.attributeID).val('');
-                jQuery('#xrowGIS-lat_'+options.attributeID).val('');
-                jQuery('#xrowGIS-country-input_'+options.attributeID).val('');
+                $.ajaxSetup({async : false});
+                $().servemap('setMapCenter', options);
+                $('#recomContainer_'+options.attributeID).css('display', 'none');
+                $('#xrowGIS-lon_'+options.attributeID).val('');
+                $('#xrowGIS-lat_'+options.attributeID).val('');
+                $('#xrowGIS-country-input_'+options.attributeID).val('');
             }
             },
         updateMap : function(options) {
@@ -83,100 +83,100 @@
                 data['attributeID'] = options;
                 data.zoom = 16;
             }
-            jQuery
+            $
                     .ez(
                             'xrowGIS_page::updateMap',
                             data,
                             function(result) {
-                                jQuery('#mapContainer_'+data.attributeID).remove().fadeOut('slow');
-                                jQuery('.mapContainer_'+data.attributeID)
+                                $('#mapContainer_'+data.attributeID).remove().fadeOut('slow');
+                                $('.mapContainer_'+data.attributeID)
                                         .append(
                                                 '<div id="mapContainer_'+data.attributeID+'" style="width: 400px; height: 400px;"></div>');
                                 var options = {
-                                	div : 'mapContainer_'+data.attributeID,
-                                	attributeID : data.attributeID,
+                                    div : 'mapContainer_'+data.attributeID,
+                                    attributeID : data.attributeID,
                                     name : result.content.name,
                                     lat : result.content.lat,
                                     lon : result.content.lon,
                                     zoom : data.zoom,
                                     drag : true
                                 };
-                                jQuery().servemap('createMap', options);
+                                $().servemap('createMap', options);
 
-                                jQuery('#xrowGIS-lon_'+data.attributeID).val(result.content.lon);
-                                jQuery('#xrowGIS-lat_'+data.attributeID).val(result.content.lat);
+                                $('#xrowGIS-lon_'+data.attributeID).val(result.content.lon);
+                                $('#xrowGIS-lat_'+data.attributeID).val(result.content.lat);
 
-                                jQuery
+                                $
                                 .ez(
                                         'xrowGIS_page::getAlpha2', {'lon':options.lon, 'lat':options.lat},function(result) {
-                                            jQuery('#xrowGIS-country-input_'+data.attributeID).val(result.content.country);
+                                            $('#xrowGIS-country-input_'+data.attributeID).val(result.content.country);
                                         });// set the right country anyway based on lonlat
                                 
                                 var show = false;
                                 if(result.content.zip != null || typeof(result.content.zip) != 'undefined')
                                 {
-                                    jQuery('#xrowGIS-zip_'+data.attributeID).replaceWith('<td id="xrowGIS-zip_'+data.attributeID+'">'+result.content.zip+'</td>');
+                                    $('#xrowGIS-zip_'+data.attributeID).replaceWith('<td id="xrowGIS-zip_'+data.attributeID+'">'+result.content.zip+'</td>');
                                     show = true;
                                 }
                                 if(result.content.street != null || typeof(result.content.street) != 'undefined')
                                 {
-                                    jQuery('#xrowGIS-street_'+data.attributeID).replaceWith('<td id="xrowGIS-street_'+data.attributeID+'">'+result.content.street+'</td>');
+                                    $('#xrowGIS-street_'+data.attributeID).replaceWith('<td id="xrowGIS-street_'+data.attributeID+'">'+result.content.street+'</td>');
                                     show = true;
                                 }
                                 if(result.content.district != null || typeof(result.content.district) != 'undefined')
                                 {
-                                    jQuery('#xrowGIS-district_'+data.attributeID).replaceWith('<td id="xrowGIS-district_'+data.attributeID+'">'+result.content.district+'</td>');
+                                    $('#xrowGIS-district_'+data.attributeID).replaceWith('<td id="xrowGIS-district_'+data.attributeID+'">'+result.content.district+'</td>');
                                     show = true;
                                 }
                                 if(result.content.city != null || typeof(result.content.city) != 'undefined')
                                 {
-                                    jQuery('#xrowGIS-city_'+data.attributeID).replaceWith('<td id="xrowGIS-city_'+data.attributeID+'">'+result.content.city+'</td>');
+                                    $('#xrowGIS-city_'+data.attributeID).replaceWith('<td id="xrowGIS-city_'+data.attributeID+'">'+result.content.city+'</td>');
                                     show = true;
                                 }
                                 if(result.content.state != null || typeof(result.content.state) != 'undefined')
                                 {
-                                    jQuery('#xrowGIS-state_'+data.attributeID).replaceWith('<td id="xrowGIS-state_'+data.attributeID+'">'+result.content.state+'</td>');
+                                    $('#xrowGIS-state_'+data.attributeID).replaceWith('<td id="xrowGIS-state_'+data.attributeID+'">'+result.content.state+'</td>');
                                     show = true;
                                 }
                                 if(show == true)
                                 {
-                                    jQuery('#recomContainer_'+data.attributeID).css('display', 'block');
+                                    $('#recomContainer_'+data.attributeID).css('display', 'block');
                                 }
                                 else
                                 {
-                                    jQuery('#recomContainer_'+data.attributeID).css('display', 'none');
+                                    $('#recomContainer_'+data.attributeID).css('display', 'none');
                                 }
                             });
         },
 
         takeOverAdress : function (data) {
-            jQuery('#recomContainer_'+data.attributeID).css('display', 'none');
-            jQuery('#xrowGIS-street-input_'+data.attributeID).val(jQuery('#xrowGIS-street_'+data.attributeID).text());
-            jQuery('#xrowGIS-zip-input_'+data.attributeID).val(jQuery('#xrowGIS-zip_'+data.attributeID).text());
-            jQuery('#xrowGIS-district-input_'+data.attributeID).val(jQuery('#xrowGIS-district_'+data.attributeID).text());
-            jQuery('#xrowGIS-city-input_'+data.attributeID).val(jQuery('#xrowGIS-city_'+data.attributeID).text());
-            jQuery('#xrowGIS-state-input_'+data.attributeID).val(jQuery('#xrowGIS-state_'+data.attributeID).text());
+            $('#recomContainer_'+data.attributeID).css('display', 'none');
+            $('#xrowGIS-street-input_'+data.attributeID).val($('#xrowGIS-street_'+data.attributeID).text());
+            $('#xrowGIS-zip-input_'+data.attributeID).val($('#xrowGIS-zip_'+data.attributeID).text());
+            $('#xrowGIS-district-input_'+data.attributeID).val($('#xrowGIS-district_'+data.attributeID).text());
+            $('#xrowGIS-city-input_'+data.attributeID).val($('#xrowGIS-city_'+data.attributeID).text());
+            $('#xrowGIS-state-input_'+data.attributeID).val($('#xrowGIS-state_'+data.attributeID).text());
         },
 
         resetForm : function (data) {
-            jQuery.ajaxSetup({async : false});
-            jQuery().servemap('setMapCenter', data);
-            jQuery('#recomContainer_'+data.attributeID).css('display', 'none');
-            jQuery('#xrowGIS-lon_'+data.attributeID).val('');
-            jQuery('#xrowGIS-lat_'+data.attributeID).val('');
-            jQuery('#xrowGIS-street-input_'+data.attributeID).val('');
-            jQuery('#xrowGIS-zip-input_'+data.attributeID).val('');
-            jQuery('#xrowGIS-district-input_'+data.attributeID).val('');
-            jQuery('#xrowGIS-city-input_'+data.attributeID).val('');
-            jQuery('#xrowGIS-state-input_'+data.attributeID).val('');
-            jQuery('#xrowGIS-country-input_'+data.attributeID).val('');
+            $.ajaxSetup({async : false});
+            $().servemap('setMapCenter', data);
+            $('#recomContainer_'+data.attributeID).css('display', 'none');
+            $('#xrowGIS-lon_'+data.attributeID).val('');
+            $('#xrowGIS-lat_'+data.attributeID).val('');
+            $('#xrowGIS-street-input_'+data.attributeID).val('');
+            $('#xrowGIS-zip-input_'+data.attributeID).val('');
+            $('#xrowGIS-district-input_'+data.attributeID).val('');
+            $('#xrowGIS-city-input_'+data.attributeID).val('');
+            $('#xrowGIS-state-input_'+data.attributeID).val('');
+            $('#xrowGIS-country-input_'+data.attributeID).val('');
         },
 
         setMapCenter : function (options) {
-            jQuery.ez('xrowGIS_page::getMapCenter', {}, function(result) {
+            $.ez('xrowGIS_page::getMapCenter', {}, function(result) {
                     var data = {
-                    	div : 'mapContainer_'+options.attributeID,
-                    	attributeID : options.attributeID,
+                        div : 'mapContainer_'+options.attributeID,
+                        attributeID : options.attributeID,
                         name : result.content.name,
                         lat : result.content.lat,
                         lon : result.content.lon,
@@ -184,62 +184,62 @@
                         drag : true,
                         reverse: true
                     };
-                    jQuery().servemap( 'updateMap', data );
+                    $().servemap( 'updateMap', data );
             });
         },
 
         addRelation : function(data) {
-            jQuery.ez('xrowGIS_page::addRelation', data, function(result) {
+            $.ez('xrowGIS_page::addRelation', data, function(result) {
                 if (result.content != null) {
                     var options = {
                         div : 'mapContainer_'+data.attributeID,
-                    	attributeID : data.attributeID,
+                        attributeID : data.attributeID,
                         name : result.content.name,
                         lat : result.content.lat,
                         lon : result.content.lon,
                         zoom : 16,
                         drag : false,
                     };
-                    jQuery('.ajaxupdate_'+data.attributeID).html(result.content.template);
-                    jQuery().servemap('createMap', options);
+                    $('.ajaxupdate_'+data.attributeID).html(result.content.template);
+                    $().servemap('createMap', options);
                 }
             });
         },
 
         releaseRelation : function(data) {
-            jQuery.ez('xrowGIS_page::releaseRelation', data, function(result) {
+            $.ez('xrowGIS_page::releaseRelation', data, function(result) {
                 var options = {
                     div : 'mapContainer_'+result.content.attributeID,
-                	attributeID : result.content.attributeID,
+                    attributeID : result.content.attributeID,
                     name : result.content.name,
                     lat : result.content.lat,
                     lon : result.content.lon,
                     zoom : 16,
                     drag : true,
                 };
-                jQuery('.ajaxupdate_'+data.attributeID).html(result.content.template);
-                jQuery().servemap('createMap', options);
-                jQuery
+                $('.ajaxupdate_'+data.attributeID).html(result.content.template);
+                $().servemap('createMap', options);
+                $
                 .ez(
                         'xrowGIS_page::getAlpha2', {'lon':result.content.lon, 'lat':result.content.lat},function(result) {
-                            jQuery('#xrowGIS-country-input_'+data.attributeID).val(result.content.country);
+                            $('#xrowGIS-country-input_'+data.attributeID).val(result.content.country);
                         });// set the right country anyway based on lonlat
-                jQuery('#xrowGIS-lon_'+data.attributeID).val(result.content.lon);
-                jQuery('#xrowGIS-lat_'+data.attributeID).val(result.content.lat);
+                $('#xrowGIS-lon_'+data.attributeID).val(result.content.lon);
+                $('#xrowGIS-lat_'+data.attributeID).val(result.content.lat);
             });
         }
     };
-    jQuery.fn.onCompleteMove = function(feature) {
+    $.fn.onCompleteMove = function(feature) {
         var newLonLat = new OpenLayers.LonLat(feature.geometry.x,
                 feature.geometry.y).transform(new OpenLayers.Projection(
                 "EPSG:900913"), new OpenLayers.Projection("EPSG:4326")),
             data = this.handlers.drag.control.options;
-        jQuery('#xrowGIS-lon_'+data.attributeID).val(newLonLat.lon);
-        jQuery('#xrowGIS-lat_'+data.attributeID).val(newLonLat.lat);
+        $('#xrowGIS-lon_'+data.attributeID).val(newLonLat.lon);
+        $('#xrowGIS-lat_'+data.attributeID).val(newLonLat.lat);
 
         var data = {
-        		div : data.div,
-        		attributeID : data.attributeID,
+                div : data.div,
+                attributeID : data.attributeID,
                 lat : newLonLat.lat,
                 lon : newLonLat.lon,
                 zoom : 16,
@@ -247,10 +247,10 @@
                 drag : true,
         }
 
-        jQuery().servemap( 'updateMap', data );
+        $().servemap( 'updateMap', data );
     };
 
-    jQuery.fn.drawFeatures = function(options) {
+    $.fn.drawFeatures = function(options) {
         var layer = options.layer;
         var map = options.map;
         var lonLat = options.lonLat;
@@ -265,7 +265,7 @@
         layer.addFeatures(features);
     };
 
-    jQuery.fn.servemap = function(method) {
+    $.fn.servemap = function(method) {
         // Method calling logic
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(
@@ -273,8 +273,8 @@
         } else if (typeof method === 'object' || !method) {
             return methods.init.apply(this, arguments);
         } else {
-            jQuery.error('Method ' + method
-                    + ' does not exist on jQuery.servemap');
+            $.error('Method ' + method
+                    + ' does not exist on $.servemap');
         }
 
     };
