@@ -1,6 +1,9 @@
 function handleGPXLayer(GPXLayer)
 {
-    var startLonLat, endLonLat, startFeature, GPXMarkers;
+    var startLonLat,
+        endLonLat,
+        startFeature,
+        GPXMarkers;
     if(GPXLayer.show.marker != false && typeof(GPXLayer.show.marker) != 'undefined')
     {
         if ((typeof (GPXLayer) != 'undefined' || GPXLayer.start != '')
@@ -36,44 +39,41 @@ function handleGPXLayer(GPXLayer)
 
 function initPopups()
 {
-    this.popupControl = new OpenLayers.Control.SelectFeature(
-            this.map.map.selectLayers,
+    this.popupControl = new OpenLayers.Control.SelectFeature( this.map.map.selectLayers, {
+        onSelect : function(feature) {
+            
+            if(feature.layer.featureType == 'GPX')
             {
-                onSelect : function(feature) {
-                    
-                    if(feature.layer.featureType == 'GPX')
-                    {
-                        this.pos = feature.geometry.components[feature.geometry.components.length/2];
-                        if(typeof(this.pos) == 'undefined')
-                        {
-                            this.pos = feature.layer.featurePoint;
-                        }
-                        feature.attributes = feature.layer.featureContent.attributes;
-                    }else
-                    {
-                        this.pos = feature.geometry;
-                    }
-                    
-                    this.featureLonLat = new OpenLayers.LonLat(this.pos.x, this.pos.y);
-//                    this.map.setCenter(this.featureLonLat, 16);
-                    
-                    if (typeof this.popup != "undefined" && this.popup != null) {
-                        this.map.removePopup(this.popup);
-                    }
-                    this.popup = new OpenLayers.Popup.FramedCloud("popup",
-                            this.featureLonLat,
-                            new OpenLayers.Size(200, 200), 
-                            feature.attributes.description,
-                            null, 
-                            true
-                        );
-                    this.popup.calculateRelativePosition = function () {
-                        return 'br';
-                    }
-                    this.map.addPopup(this.popup);
-                    this.popup.events.register("click", this, popupDestroy);
+                this.pos = feature.geometry.components[feature.geometry.components.length/2];
+                if(typeof(this.pos) == 'undefined')
+                {
+                    this.pos = feature.layer.featurePoint;
                 }
-            });
+                feature.attributes = feature.layer.featureContent.attributes;
+            }else
+            {
+                this.pos = feature.geometry;
+            }
+            
+            this.featureLonLat = new OpenLayers.LonLat(this.pos.x, this.pos.y);
+            //this.map.setCenter(this.featureLonLat, 16);
+            
+            if (typeof this.popup != "undefined" && this.popup != null) {
+                this.map.removePopup(this.popup);
+            }
+            this.popup = new OpenLayers.Popup.FramedCloud("popup",
+                this.featureLonLat,
+                new OpenLayers.Size(200, 200), 
+                feature.attributes.description,
+                null, 
+                true);
+            this.popup.calculateRelativePosition = function () {
+                return 'br';
+            }
+            this.map.addPopup(this.popup);
+            this.popup.events.register("click", this, popupDestroy);
+        }
+    });
     this.map.map.addControl(this.popupControl);
     this.popupControl.activate();
 }
@@ -105,24 +105,20 @@ function setHTML(response) {
                 {
                     linkinfo = "<br /><a href='" + vals[1] + "' target='_blank'>mehr...</a>";
                 }
-                
             }
         }
-        popup_info = "<h2>" + cat +
-                     "</h2><p>" + leg + "</p>"
-                       + linkinfo;
-        
+        popup_info = "<h2>" + cat + "</h2><p>" + leg + "</p>" + linkinfo;
         this.featureLonLat = this.getLonLatFromPixel(window.xy);
         this.setCenter(this.featureLonLat, 16);
         if (typeof this.popup != "undefined" && this.popup != null) {
             this.removePopup(this.popup);
         }
         this.popup = new OpenLayers.Popup.FramedCloud("popup",
-                this.featureLonLat,
-                new OpenLayers.Size(200, 200), 
-                popup_info,
-                null, 
-                true);
+            this.featureLonLat,
+            new OpenLayers.Size(200, 200), 
+            popup_info,
+            null, 
+            true);
         this.popup.calculateRelativePosition = function () {
             return 'br';
         }
@@ -174,22 +170,21 @@ function handleGISRequests(initialPoint)
     }
     if( $("input.global-map-search").length )
     {
-        jQuery.ez('xrowGIS_page::updateMap',{'input': $("input.global-map-search").val(), 'mapsearch' : true},
-                function(result) {
-                    position  = {'coords' : {'longitude' : result.content.lon, 'latitude' : result.content.lat}};
-                    handle_geolocation_query(position);
-                    
-                    $('input[name="SearchClass"]:checked').each(function(){
-                        SearchClass.push($(this).val());
-                    });
-                    data = {
-                        'SearchClass'  : SearchClass,
-                        'SearchText'   : $('input[name="SearchText"]').val(),
-                        'position'     : position.coords
-                    };
-                    jQuery.ez( 'xrowGIS_page::ShowCurPosItems', data, function(result) {
-                        $("#cur_pos_list").html(result.content.template);
-                    });
+        jQuery.ez('xrowGIS_page::updateMap',{'input': $("input.global-map-search").val(), 'mapsearch' : true}, function(result) {
+            position  = {'coords' : {'longitude' : result.content.lon, 'latitude' : result.content.lat}};
+            handle_geolocation_query(position);
+            
+            $('input[name="SearchClass"]:checked').each(function(){
+                SearchClass.push($(this).val());
+            });
+            data = {
+                'SearchClass'  : SearchClass,
+                'SearchText'   : $('input[name="SearchText"]').val(),
+                'position'     : position.coords
+            };
+            jQuery.ez( 'xrowGIS_page::ShowCurPosItems', data, function(result) {
+                $("#cur_pos_list").html(result.content.template);
+            });
         });
     }
 }
@@ -197,31 +192,27 @@ function handleGISRequests(initialPoint)
 function mapSearch()
 {
     //deprecated
-    jQuery.ez('xrowGIS_page::updateMap',{'input': $("input.global-map-search").val(), 'mapsearch' : true},
-            function(result) {
-                position  = {'coords' : {'longitude' : result.content.lon, 'latitude' : result.content.lat}};
-                handle_geolocation_query(position);
+    jQuery.ez('xrowGIS_page::updateMap',{'input': $("input.global-map-search").val(), 'mapsearch' : true}, function(result) {
+        position  = {'coords' : {'longitude' : result.content.lon, 'latitude' : result.content.lat}};
+        handle_geolocation_query(position);
     });
 }
 
 function mapAddressSearch(inputText) {
-    window.console.log(this);
-    jQuery.ez('xrowGIS_page::updateMap',{'input': $(inputText).val(), 'mapsearch' : true},
-            function(result) {
-                position  = {'coords' : {'longitude' : result.content.lon, 'latitude' : result.content.lat}};
-                handle_geolocation_query(position);
+    jQuery.ez('xrowGIS_page::updateMap',{'input': $(inputText).val(), 'mapsearch' : true}, function(result) {
+        position  = {'coords' : {'longitude' : result.content.lon, 'latitude' : result.content.lat}};
+        handle_geolocation_query(position);
     });
 }
 
 function zoomEnd()
 {
-    $.each(this.layers, function(index, value)
-            {
-                if(value.isBaseLayer == "false" || value.isBaseLayer == false)
-                {
-                    value.redraw();
-                }
-            });
+    $.each(this.layers, function(index, value) {
+        if(value.isBaseLayer == "false" || value.isBaseLayer == false)
+        {
+            value.redraw();
+        }
+    });
 }
 
 function changeVisibility(layerArray)

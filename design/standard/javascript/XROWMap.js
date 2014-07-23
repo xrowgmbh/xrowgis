@@ -46,7 +46,6 @@ XROWMap.prototype.init = function(element) {
     }
     
     //mapSearch
-
     if( typeof(this.mapsearch)!='undefined' && this.mapsearch == true)
     {
         $(element).prepend('<form onsubmit="return false;" class="map_search_form"><input type="text" name="SearchText" value="" placeholder="'+ $(element).data("searchtext_placeholder") +'" size="30" /><input type="button" title="'+ $(element).data("searchbutton_title") +'"/></form>');
@@ -57,16 +56,6 @@ XROWMap.prototype.init = function(element) {
         });
     }
     
-    //For fullscreen
-    $(".olControlButton").live("click",function(){
-        if ( $(this).hasClass("exit") ) {
-            $(this).removeClass("exit").closest(".custom_map").fullScreen(false);
-        }
-        else {
-            $(this).addClass("exit").closest(".custom_map").fullScreen(true);
-        }
-    });
-
     // initalize map Object
     this.map = new OpenLayers.Map(
                 {
@@ -237,6 +226,17 @@ XROWMap.prototype.init = function(element) {
 
 // all this stuff underneath here comes to MapUtils.js...later.
 $(document).ready(function() {
+    
+    //For fullscreen
+    $(".olControlButton").live("click",function(){
+        if ( $(this).hasClass("exit") ) {
+            $(this).removeClass("exit").closest(".custom_map").fullScreen(false);
+        }
+        else {
+            $(this).addClass("exit").closest(".custom_map").fullScreen(true);
+        }
+    });
+    
     var position = {};
     $('.XROWMap').each(function(index) {
         switch ($(this).data().maptype) {
