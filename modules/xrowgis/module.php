@@ -33,11 +33,7 @@ $ViewList["gpxdownload"] = array(
 );
 
 $FunctionList = array();
-$FunctionList['georss'] = array();
-$FunctionList['gpxdownload'] = array();
 $FunctionList['editor'] = array();
-$FunctionList['search'] = array(); // only used by template code to see if user should see this feature in ezoe
-$FunctionList['browse'] = array(); // only used by template code to see if user should see this feature in ezoe
-
+$FunctionList['create_empty'] = array();
 
 ?>

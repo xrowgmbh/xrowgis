@@ -120,6 +120,17 @@ class xrowGIStype extends eZDataType
                 return eZInputValidator::STATE_ACCEPTED;
             }
         }
+        $contentObject = eZContentObject::fetch( $contentObjectAttribute->ContentObjectID );
+        $className =$contentObject->ClassIdentifier;
+        $currentUser = eZUser::currentUser();
+        if ( $contentObjectAttribute->validateIsRequired() && $currentUser instanceof eZUser )
+        {
+            $result = $currentUser->hasAccessTo( 'xrowgis','create_empty' );
+            if( isset($result) && $result["accessWord"]=="yes" && $className === "event")
+            {
+                return eZInputValidator::STATE_ACCEPTED;
+            }
+        }
         $contentObjectAttribute->setValidationError( ezpI18n::tr( 'kernel/classes/datatypes', 'Missing geographic information' ) );
         return eZInputValidator::STATE_INVALID;
     }
