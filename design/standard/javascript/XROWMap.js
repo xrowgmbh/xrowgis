@@ -320,6 +320,20 @@ $(document).ready(function() {
             $(this)[0].parentNode.layer.setVisibility(true);
          }
     });
+    if ($(".aktive_facet").length > 0)
+    {
+        var akt_str=$(".aktive_facet").text();
+        if(akt_str == "1")
+        {
+            $(".click-list input[type=checkbox]").each(function(){
+                jQuery(this).attr("checked", true);
+            }); 
+        }else{
+            $(".click-list input[type=checkbox]").each(function(){
+                jQuery(this).attr("checked", false);
+            }); 
+        }
+    }
     $(".click-list input[type=checkbox]").each(
         function() {
                 if($(this)[0].checked === true)
