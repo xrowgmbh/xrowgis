@@ -4,7 +4,7 @@ function handleGPXLayer(GPXLayer)
         endLonLat,
         startFeature,
         GPXMarkers;
-    if(GPXLayer.show.marker != false && typeof(GPXLayer.show.marker) != 'undefined')
+    if(GPXLayer.show != null && (GPXLayer.show.marker != false && typeof(GPXLayer.show.marker) != 'undefined'))
     {
         if ((typeof (GPXLayer) != 'undefined' || GPXLayer.start != '')
                 && (typeof (GPXLayer.end) != 'undefined' || GPXLayer.end != '')) {
@@ -31,7 +31,7 @@ function handleGPXLayer(GPXLayer)
         }
     }
     //try to center the viewport and adjust the zoom using the start point lonlat
-    if(GPXLayer.show.zoom != false && typeof(GPXLayer.show.zoom) != 'undefined')
+    if(GPXLayer.show != null && (GPXLayer.show.zoom != false && typeof(GPXLayer.show.zoom) != 'undefined'))
     {
         this.map.map.setCenter(startLonLat, this.map.map.getZoomForExtent(GPXLayer.layer.getExtent(), false));
     }
