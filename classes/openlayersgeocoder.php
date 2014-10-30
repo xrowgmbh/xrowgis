@@ -117,7 +117,7 @@ class OpenLayersGeoCoder extends GeoCoder
             else
                 return false;
         }
-        $requestUrl = $url . "?address=" . urlencode( $searchstring ) . "&sensor=false&bounds=" . $bounds . "";
+        $requestUrl = $url . "?address=" . urlencode( $searchstring ) . "&sensor=false&language=de&bounds=" . $bounds . "";
         
         //        eZDebug::writeDebug( $requestUrl, 'Openlayers GeoCoder Request' );
         //request the google kml result
