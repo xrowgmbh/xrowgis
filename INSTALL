@@ -24,18 +24,6 @@ And add the location field type definition below the geopoint definition:
 3. Add dynamic field definition:
 Search for the geopoint dynamic field definition in your solr schema.xml file:
 <!-- geopoint for geospatial/location searches, boosting, ... -->
-<dynamicField name="*_gpt" type="geopoint"  indexed="true"  stored="true"/>
-
-And add the following dynamic field type definition below:
-
-<!-- location for geospatial search -->
-<dynamicField name="*_loc" type="location"  indexed="true"  stored="true"/>
-<dynamicField name="*_loc_0_coordinate" type="double"  indexed="true"  stored="true"/>
-<dynamicField name="*_loc_1_coordinate" type="double"  indexed="true"  stored="true"/>
-
-4. Add dynamic field definition:
-Search for the geopoint dynamic field definition in your solr schema.xml file:
-<!-- geopoint for geospatial/location searches, boosting, ... -->
 <dynamicField name="*____gpt" type="geopoint"  indexed="true"  stored="true" multiValued="true"/>
 
 And add the following dynamic field type definition below:
