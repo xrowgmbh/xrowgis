@@ -46,7 +46,19 @@ class xrowGEORSS
                     $item = $this->feed->add( 'item' );
                     $item->title = $node->getName();
                     $link = $node->attribute( 'url_alias' );
-                    $collectionAttributes['GeoRSS']['link'] = $node->attribute( 'url_alias' );
+                    if($node->isMain())
+                    {
+                        $collectionAttributes['GeoRSS']['link'] = $node->attribute( 'url_alias' );
+                    }else
+                    {
+                        $main_node=$node->object()->mainNode();
+                        $collectionAttributes['GeoRSS']['link'] = $main_node->attribute( 'url_alias' );
+                    }
+                    
+                    if($dm['xrowgis']->attribute( 'has_content' ))
+                    {
+                        $collectionAttributes['GeoRSS']['address'] = array($dm['xrowgis']->Content->street,$dm['xrowgis']->Content->zip,$dm['xrowgis']->Content->city);
+                    }
 
                     $item->id = self::transformURI( $link, true, 'full' );
                     
@@ -66,9 +78,9 @@ class xrowGEORSS
                         }
                     }
 
-                    if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']] instanceof eZContentObjectAttribute )
+                    if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']] instanceof eZContentObjectAttribute)
                     {
-                        if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'has_content' ) )
+                        if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'has_content' ))
                         {
                             if ( ( $content = $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'content' ) ) instanceof eZContentObject )
                             {
@@ -78,28 +90,39 @@ class xrowGEORSS
                             {
                                 $imageID = $content['relation_list'][0]['contentobject_id'];
                             }
-                            if ( ( $imageObject = eZContentObject::fetch( $imageID ) ) instanceof eZContentObject && $imageObject->canRead() )
+                        }
+                    }else{
+                        if ( $dm['image']->hasContent())
+                        {
+                            if(($content = $dm['image']->attribute( 'content' )) instanceof eZContentObject )
                             {
-                                $imageObject = $imageObject->dataMap();
-                                foreach ( $imageObject as $coAttribute )
+                                $imageID = $content->attribute( 'id' );
+                            }
+                        }
+                    }
+                    if(isset($imageID))
+                    {
+                        if ( ( $imageObject = eZContentObject::fetch( $imageID ) ) instanceof eZContentObject && $imageObject->canRead() )
+                        {
+                            $imageObject = $imageObject->dataMap();
+                            foreach ( $imageObject as $coAttribute )
+                            {
+                                if ( $coAttribute->attribute( 'data_type_string' ) == eZImageType::DATA_TYPE_STRING )
                                 {
-                                    if ( $coAttribute->attribute( 'data_type_string' ) == eZImageType::DATA_TYPE_STRING )
+                                    if ( $coAttribute->content()->attribute( 'is_valid' ) )
                                     {
-                                        if ( $coAttribute->content()->attribute( 'is_valid' ) )
+                                        $content = $coAttribute->content();
+                                        if ( ! empty( $this->cache['cache'][$node->classIdentifier()]['imageAlias'] ) || $this->cache['cache'][$node->classIdentifier()]['image'] != 'original' )
                                         {
-                                            $content = $coAttribute->content();
-                                            if ( ! empty( $this->cache['cache'][$node->classIdentifier()]['imageAlias'] ) || $this->cache['cache'][$node->classIdentifier()]['image'] != 'original' )
-                                            {
-                                                $prefix = "_{$this->cache['cache'][$node->classIdentifier()]['imageAlias']}";
-                                                $content->imageAlias( $this->cache['cache'][$node->classIdentifier()]['imageAlias'] );
-                                            }
-                                            $image = eZSys::instance()->serverURL() . '/' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["dirpath"] . '/' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["basename"] . $prefix . '.' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["suffix"];
-                                            $collectionAttributes['GeoRSS']['image'] = array( 
-                                                'src' => $image , 
-                                                'class' => $this->cache['cache'][$node->classIdentifier()]['imageStyle'] , 
-                                                'alt' => $coAttribute->content()->attribute( 'alternative_text' ) 
-                                            );
+                                            $prefix = "_{$this->cache['cache'][$node->classIdentifier()]['imageAlias']}";
+                                            $content->imageAlias( $this->cache['cache'][$node->classIdentifier()]['imageAlias'] );
                                         }
+                                        $image = eZSys::instance()->serverURL() . '/' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["dirpath"] . '/' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["basename"] . $prefix . '.' . $content->ContentObjectAttributeData["DataTypeCustom"]["alias_list"]["original"]["suffix"];
+                                        $collectionAttributes['GeoRSS']['image'] = array(
+                                                'src' => $image ,
+                                                'class' => $this->cache['cache'][$node->classIdentifier()]['imageStyle'] ,
+                                                'alt' => $coAttribute->content()->attribute( 'alternative_text' )
+                                        );
                                     }
                                 }
                             }
@@ -138,7 +161,7 @@ class xrowGEORSS
         $params['ClassFilterType'] = 'include';
         $params['ClassFilterArray'] = $this->cache['class_identifier'];
         //$params['Depth'] = 2;
-		
+        
         if ( ( is_array( $treeNode = eZContentObjectTreeNode::subTreeByNodeID( $params, $this->nodeID ) ) ) && ! empty( $treeNode ) && $this->tree)
         {
             return $treeNode;
