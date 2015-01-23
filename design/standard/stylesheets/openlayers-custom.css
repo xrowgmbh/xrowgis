@@ -264,6 +264,7 @@ div.olControlSaveFeaturesItemInactive {
 .olPopupCloseBox {
   background: url("img/close.gif") no-repeat;
   cursor: pointer;
+  right: 40px !important;
 }
 
 .olFramedCloudPopupContent {
