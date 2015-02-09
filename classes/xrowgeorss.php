@@ -77,7 +77,7 @@ class xrowGEORSS
                             $this->cache['cache'][$node->classIdentifier()]['text'] = $this->cache['cache'][$node->classIdentifier()]['default'];
                         }
                     }
-
+                    $imageID = false;
                     if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']] instanceof eZContentObjectAttribute)
                     {
                         if ( $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'has_content' ))
