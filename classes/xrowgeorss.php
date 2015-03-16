@@ -36,7 +36,7 @@ class xrowGEORSS
 
             foreach ( $treeNodes as $node )
             {
-                $poi_class=array("article","folder","event","location","organisation","contact");
+                $poi_class=array("article","folder","event","location","organisation","contact","localbusiness");
                 $collectionAttributes = array();
                 $dm = $node->dataMap();
                 if(empty($dm[$this->cache['cache'][$node->classIdentifier()]['gis']]))continue;
@@ -55,9 +55,12 @@ class xrowGEORSS
                         $collectionAttributes['GeoRSS']['link'] = $main_node->attribute( 'url_alias' );
                     }
                     
-                    if($dm['xrowgis']->attribute( 'has_content' ))
+                    if(!is_null($dm['xrowgis']) && $dm['xrowgis']->attribute( 'has_content' ))
                     {
                         $collectionAttributes['GeoRSS']['address'] = array($dm['xrowgis']->Content->street,$dm['xrowgis']->Content->zip,$dm['xrowgis']->Content->city);
+                    }elseif(!is_null($dm['location']) && $dm['location']->attribute( 'has_content' ))
+                    {
+                        $collectionAttributes['GeoRSS']['address'] = array($dm['location']->Content->street,$dm['location']->Content->zip,$dm['location']->Content->city);
                     }
 
                     $item->id = self::transformURI( $link, true, 'full' );
@@ -86,6 +89,15 @@ class xrowGEORSS
                             {
                                 $imageID = $content->attribute( 'id' );
                             }
+                            elseif(( $content = $dm[$this->cache['cache'][$node->classIdentifier()]['image']]->attribute( 'content' ) ) instanceof eZImageAliasHandler )
+                            {
+                                if ( ! empty( $this->cache['cache'][$node->classIdentifier()]['imageAlias'] ) || $this->cache['cache'][$node->classIdentifier()]['image'] != 'original' )
+                                {
+                                    $prefix = "_{$this->cache['cache'][$node->classIdentifier()]['imageAlias']}";
+                                    $content->imageAlias( $this->cache['cache'][$node->classIdentifier()]['imageAlias'] );
+                                }
+                                $imageID = $content->aliasList();
+                            }
                             else
                             {
                                 $imageID = $content['relation_list'][0]['contentobject_id'];
@@ -102,7 +114,15 @@ class xrowGEORSS
                     }
                     if(isset($imageID))
                     {
-                        if ( ( $imageObject = eZContentObject::fetch( $imageID ) ) instanceof eZContentObject && $imageObject->canRead() )
+                        if(is_array($imageID))
+                        {
+                            $collectionAttributes['GeoRSS']['image'] = array(
+                                                                              'src' => eZSys::instance()->serverURL() . '/' .$imageID['teaser']['url'] ,
+                                                                              'class' => $this->cache['cache'][$node->classIdentifier()]['imageStyle'] ,
+                                                                              'alt' => $imageID['teaser']['alternative_text']
+                                                                            );
+                        }
+                        elseif ( ( $imageObject = eZContentObject::fetch( $imageID ) ) instanceof eZContentObject && $imageObject->canRead() )
                         {
                             $imageObject = $imageObject->dataMap();
                             foreach ( $imageObject as $coAttribute )
