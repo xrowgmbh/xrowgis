@@ -181,6 +181,12 @@ class xrowGEORSS
         $params['ClassFilterType'] = 'include';
         $params['ClassFilterArray'] = $this->cache['class_identifier'];
         //$params['Depth'] = 2;
+        //only for localbusiness
+        $attributefilter[]= 'or';
+        $attributefilter[]= array( '989', '=', '1');
+        $attributefilter[]= array( '989', '=', '2');
+        $attributefilter[]= array( '989', '=', '3');
+        $params['AttributeFilter'] = $attributefilter;
         
         if ( ( is_array( $treeNode = eZContentObjectTreeNode::subTreeByNodeID( $params, $this->nodeID ) ) ) && ! empty( $treeNode ) && $this->tree)
         {
