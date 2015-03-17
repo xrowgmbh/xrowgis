@@ -151,7 +151,12 @@ class xrowGEORSS
                     if ( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_type_string' ) == eZXMLTextType::DATA_TYPE_STRING )
                     {
                         $outputHandler = new xrowRSSOutputHandler( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_text' ), false );
-                        $collectionAttributes['GeoRSS']['description'] = htmlspecialchars($outputHandler->outputText());
+                        if($node->classIdentifier() == 'localbusiness')
+                        {
+                            $collectionAttributes['GeoRSS']['description'] = substr(htmlspecialchars($outputHandler->outputText()),0,350).'...';
+                        }else{
+                            $collectionAttributes['GeoRSS']['description'] = htmlspecialchars($outputHandler->outputText());
+                        }
                     }
                     else
                     {
