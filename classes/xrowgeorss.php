@@ -181,16 +181,30 @@ class xrowGEORSS
         $params['ClassFilterType'] = 'include';
         $params['ClassFilterArray'] = $this->cache['class_identifier'];
         //$params['Depth'] = 2;
-        //only for localbusiness
-        $attributefilter[]= 'or';
-        $attributefilter[]= array( '989', '=', '1');
-        $attributefilter[]= array( '989', '=', '2');
-        $attributefilter[]= array( '989', '=', '3');
-        $params['AttributeFilter'] = $attributefilter;
-        
+        $treenode_array=array();
         if ( ( is_array( $treeNode = eZContentObjectTreeNode::subTreeByNodeID( $params, $this->nodeID ) ) ) && ! empty( $treeNode ) && $this->tree)
         {
-            return $treeNode;
+            foreach($treeNode as $treeNodeitem)
+            {
+                if($treeNodeitem->ClassIdentifier =="localbusiness")
+                {
+                   $data_maps=$treeNodeitem->dataMap();
+                   
+                   foreach($data_maps as $data_map)
+                   {
+                       if($data_map->ContentClassAttributeIdentifier === "package")
+                       {
+                           if($data_map->DataInt != '4')
+                           {
+                               array_push($treenode_array,$treeNodeitem);
+                           }
+                       }
+                   }
+                }else{
+                    array_push($treenode_array,$treeNodeitem);
+                }
+            }
+            return $treenode_array;
         }
         else
         {
