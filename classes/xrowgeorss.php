@@ -36,7 +36,7 @@ class xrowGEORSS
 
             foreach ( $treeNodes as $node )
             {
-                $poi_class=array("article","folder","event","location","organisation","contact","localbusiness");
+                $poi_class=array("article","folder","event","location","organisation","contact","localbusiness","frontpage");
                 $collectionAttributes = array();
                 $dm = $node->dataMap();
                 if(empty($dm[$this->cache['cache'][$node->classIdentifier()]['gis']]))continue;
