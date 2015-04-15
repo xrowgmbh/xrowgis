@@ -1,4 +1,4 @@
-<!--If you need to add eventListeners to your layers -> data-layerlisteners='{"eventListeners" : {"loadend" : "layerLoaded", "visibilitychanged" : "layerLoaded"}}' -->
+{*If you need to add eventListeners to your layers -> data-layerlisteners='{"eventListeners" : {"loadend" : "layerLoaded", "visibilitychanged" : "layerLoaded"}}'*}
 {def $url_array = $url|explode('://')
      $serviceURL = ezini("DataServices","ServiceURL","xrowgis.ini")
      $displayClass = ezini("Two-Col-Map","DisplayClass","xrowgis.ini")
@@ -14,7 +14,7 @@
 {if $url}
     {def $maptype = "POIMap"}
 {/if}
-
+{if not($scale|eq(''))}
 {switch match=$scale}
     {case match='1'} 
         {set $scale_osm = 17
@@ -65,7 +65,7 @@
              $scale_hde = 0}
     {/case}
 {/switch}
-
+{/if}
 <!-- map content: START -->
     <div class="XROWMap custom_map"
         data-maptype="{if is_set($maptype)}{$maptype}{else}{ezini("GISSettings","DefaultMapType","xrowgis.ini")}{/if}"
