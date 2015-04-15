@@ -63,7 +63,6 @@
                 $('#recomContainer_'+options.attributeID).css('display', 'none');
                 $('#xrowGIS-lon_'+options.attributeID).val('');
                 $('#xrowGIS-lat_'+options.attributeID).val('');
-                $('#xrowGIS-country-input_'+options.attributeID).val('');
             }
             },
         updateMap : function(options) {
