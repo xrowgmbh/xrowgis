@@ -1,0 +1,10 @@
+Tipps:
+
+Pick the right locale for your map
+
+The international version of the openstreetmap is found here:
+
+http://a.tile.openstreetmap.org:80/${z}/${x}/${y}.png
+
+The german version of the openstreetmap is found here:
+http://a.tile.openstreetmap.de:80/tiles/osmde/${z}/${x}/${y}.png
