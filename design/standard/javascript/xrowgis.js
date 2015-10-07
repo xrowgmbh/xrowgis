@@ -258,7 +258,7 @@
 
 jQuery(document).ready( (function () {
     if (jQuery('input.uploadImage').length > 0) {
-        jQuery('input.uploadImage').live( 'click', function(e) {
+        jQuery('input.uploadImage').on( 'click', function(e) {
             var idArray = jQuery(this).attr('id').split('_'),
                 url = jQuery('input#' + jQuery(this).attr('id') + '_url').val(),
                 page_top = e.pageY - 400,
@@ -314,7 +314,7 @@ jQuery(document).ready( (function () {
             
             jQuery('body').append(innerHTML);
             jQuery('body').append(blocker);
-            jQuery('a#mce_' + idArray[3] + '_close').live( 'click', function(e) {
+            jQuery('a#mce_' + idArray[3] + '_close').on( 'click', function(e) {
                 jQuery('#mce_' + idArray[3]).remove();
                 jQuery('#mceModalBlocker').remove();
             });
