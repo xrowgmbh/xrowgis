@@ -257,8 +257,8 @@
 })(jQuery);
 
 jQuery(document).ready( (function () {
-    if (jQuery('input.uploadImage')) {
-        jQuery('input.uploadImage') .live( 'click', function(e) {
+    if (jQuery('input.uploadImage').length > 0) {
+        jQuery('input.uploadImage').live( 'click', function(e) {
             var idArray = jQuery(this).attr('id').split('_'),
                 url = jQuery('input#' + jQuery(this).attr('id') + '_url').val(),
                 page_top = e.pageY - 400,
