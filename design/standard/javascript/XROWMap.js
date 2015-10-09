@@ -228,7 +228,7 @@ XROWMap.prototype.init = function(element) {
 $(document).ready(function() {
     
     //For fullscreen
-    $(".olControlButton").live("click",function(){
+    $(".olControlButton").on("click",function(){
         if ( $(this).hasClass("exit") ) {
             $(this).removeClass("exit").closest(".custom_map").fullScreen(false);
         }
