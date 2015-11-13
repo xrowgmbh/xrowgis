@@ -226,17 +226,6 @@ XROWMap.prototype.init = function(element) {
 
 // all this stuff underneath here comes to MapUtils.js...later.
 $(document).ready(function() {
-    
-    //For fullscreen
-    $(".olControlButton").on("click",function(){
-        if ( $(this).hasClass("exit") ) {
-            $(this).removeClass("exit").closest(".custom_map").fullScreen(false);
-        }
-        else {
-            $(this).addClass("exit").closest(".custom_map").fullScreen(true);
-        }
-    });
-    
     var position = {};
     $('.XROWMap').each(function(index) {
         switch ($(this).data().maptype) {
@@ -294,6 +283,16 @@ $(document).ready(function() {
          }else {
              error('not supported');
          }
+    });
+   
+    //For fullscreen
+    $(".olControlButton").on("click",function(){
+        if ( $(this).hasClass("exit") ) {
+            $(this).removeClass("exit").closest(".custom_map").fullScreen(false);
+        }
+        else {
+            $(this).addClass("exit").closest(".custom_map").fullScreen(true);
+        }
     });
    
     $(".click-list li :checkbox").click(function()
