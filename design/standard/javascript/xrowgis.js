@@ -257,67 +257,65 @@
 })(jQuery);
 
 jQuery(document).ready( (function () {
-    if (jQuery('input.uploadImage').length > 0) {
-        jQuery('input.uploadImage').on( 'click', function(e) {
-            var idArray = jQuery(this).attr('id').split('_'),
-                url = jQuery('input#' + jQuery(this).attr('id') + '_url').val(),
-                page_top = e.pageY - 400,
-                body_half_width = jQuery('body').width() / 2;
-            
-            if (body_half_width > 510)
-                var page_left = body_half_width - 200;
-            else
-                var page_left = body_half_width - 300;
-            
-            var innerHTML = '<div id="mce_'
-                    + idArray[3]
-                    + '" class="clearlooks2" style="width: 510px; height: 509px; top: '
-                    + page_top
-                    + 'px; left: '
-                    + page_left
-                    + 'px; overflow: auto; z-index: 300020;">'
-                    + '<div id="mce_'
-                    + idArray[3]
-                    + '_top" class="mceTop"><div class="mceLeft"></div><div class="mceCenter"></div><div class="mceRight"></div><span id="mce_'
-                    + idArray[3]
-                    + '_title">Add GIS Relation</span></div>'
-                    + '<div id="mce_'
-                    + idArray[3]
-                    + '_middle" class="mceMiddle">'
-                    + '<div id="mce_'
-                    + idArray[3]
-                    + '_left" class="mceLeft"></div>'
-                    + '<span id="mce_'
-                    + idArray[3]
-                    + '_content">'
-                    + '<iframe src="'
-                    + url
-                    + '" class="uploadFrame_xrowGIS" id="uploadFrame_'
-                    + jQuery(this).attr('id')
-                    + '" name="uploadFrame_'
-                    + jQuery(this).attr('id')
-                    + '" style="border: 0pt none; width: 500px; height: 480px;" />'
-                    + '</span>'
-                    + '<div id="mce_'
-                    + idArray[3]
-                    + '_right" class="mceRight"></div>'
-                    + '</div>'
-                    + '<div id="mce_'
-                    + idArray[3]
-                    + '_bottom" class="mceBottom"><div class="mceLeft"></div><div class="mceCenter"></div><div class="mceRight"></div><span id="mce_'
-                    + idArray[3]
-                    + '_status">Content</span></div>'
-                    + '<a class="mceClose" id="mce_'
-                    + idArray[3]
-                    + '_close"></a>' + '</div>'
-                    + '</div>', blocker = '<div id="mceModalBlocker" class="clearlooks2_modalBlocker" style="z-index: 300017; display: block;"></div>';
-            
-            jQuery('body').append(innerHTML);
-            jQuery('body').append(blocker);
-            jQuery('a#mce_' + idArray[3] + '_close').on( 'click', function(e) {
-                jQuery('#mce_' + idArray[3]).remove();
-                jQuery('#mceModalBlocker').remove();
-            });
+    jQuery('input.uploadImage').live( 'click', function(e) {
+        var idArray = jQuery(this).attr('id').split('_'),
+            url = jQuery('input#' + jQuery(this).attr('id') + '_url').val(),
+            page_top = e.pageY - 400,
+            body_half_width = jQuery('body').width() / 2;
+        
+        if (body_half_width > 510)
+            var page_left = body_half_width - 200;
+        else
+            var page_left = body_half_width - 300;
+        
+        var innerHTML = '<div id="mce_'
+                + idArray[3]
+                + '" class="clearlooks2" style="width: 510px; height: 509px; top: '
+                + page_top
+                + 'px; left: '
+                + page_left
+                + 'px; overflow: auto; z-index: 300020;">'
+                + '<div id="mce_'
+                + idArray[3]
+                + '_top" class="mceTop"><div class="mceLeft"></div><div class="mceCenter"></div><div class="mceRight"></div><span id="mce_'
+                + idArray[3]
+                + '_title">Add GIS Relation</span></div>'
+                + '<div id="mce_'
+                + idArray[3]
+                + '_middle" class="mceMiddle">'
+                + '<div id="mce_'
+                + idArray[3]
+                + '_left" class="mceLeft"></div>'
+                + '<span id="mce_'
+                + idArray[3]
+                + '_content">'
+                + '<iframe src="'
+                + url
+                + '" class="uploadFrame_xrowGIS" id="uploadFrame_'
+                + jQuery(this).attr('id')
+                + '" name="uploadFrame_'
+                + jQuery(this).attr('id')
+                + '" style="border: 0pt none; width: 500px; height: 480px;" />'
+                + '</span>'
+                + '<div id="mce_'
+                + idArray[3]
+                + '_right" class="mceRight"></div>'
+                + '</div>'
+                + '<div id="mce_'
+                + idArray[3]
+                + '_bottom" class="mceBottom"><div class="mceLeft"></div><div class="mceCenter"></div><div class="mceRight"></div><span id="mce_'
+                + idArray[3]
+                + '_status">Content</span></div>'
+                + '<a class="mceClose" id="mce_'
+                + idArray[3]
+                + '_close"></a>' + '</div>'
+                + '</div>', blocker = '<div id="mceModalBlocker" class="clearlooks2_modalBlocker" style="z-index: 300017; display: block;"></div>';
+        
+        jQuery('body').append(innerHTML);
+        jQuery('body').append(blocker);
+        jQuery('a#mce_' + idArray[3] + '_close').on( 'click', function(e) {
+            jQuery('#mce_' + idArray[3]).remove();
+            jQuery('#mceModalBlocker').remove();
         });
-    }
+    });
 }));
