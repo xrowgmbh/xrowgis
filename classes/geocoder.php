@@ -57,6 +57,17 @@ class GeoCoder
     {
     
     }
+    
+    public function __get($name)
+    {
+        return $this->$name;
+    }
+    
+    public function __set($name, $value)
+    {
+        $this->$name = $value;
+        return true;
+    }
 
     /**
      * Fills the Geocoder with initial data
