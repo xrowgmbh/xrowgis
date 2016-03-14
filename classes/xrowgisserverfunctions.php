@@ -7,6 +7,26 @@ class xrowGISServerfunctions extends ezjscServerFunctions
     {
         return true;
     }
+    
+    public static function getAddress()
+    {
+        $http = eZHTTPTool::instance();
+        $result = array();
+        if ($http->hasVariable('Searchtext') && $http->variable('Searchtext') !== "") {
+            $GeoCoder = new OpenLayersGeoCoder();
+            $GeoCoder->__set("query_string", $http->variable('Searchtext'));
+            $GeoCoder->request();
+            $result['street'] = $GeoCoder->street;
+            $result['zip'] = $GeoCoder->zip;
+            $result['city'] = $GeoCoder->city;
+            $result['state'] = $GeoCoder->state;
+            $result['lon'] = $GeoCoder->longitude;
+            $result['lat'] = $GeoCoder->latitude;
+        } else {
+            return false;
+        }
+        return $result;
+    }
 
     public static function updateMap()
     {
