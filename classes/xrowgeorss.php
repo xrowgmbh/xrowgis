@@ -36,7 +36,7 @@ class xrowGEORSS
 
             foreach ( $treeNodes as $node )
             {
-                $poi_class=array("article","folder","event","location","organisation","contact","localbusiness","frontpage");
+                $poi_class=array("article","folder","event","location","organisation","contact","localbusiness","frontpage","file_audio");
                 $collectionAttributes = array();
                 $dm = $node->dataMap();
                 if(empty($dm[$this->cache['cache'][$node->classIdentifier()]['gis']]))continue;
@@ -151,7 +151,7 @@ class xrowGEORSS
                     if ( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_type_string' ) == eZXMLTextType::DATA_TYPE_STRING )
                     {
                         $outputHandler = new xrowRSSOutputHandler( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'data_text' ), false );
-                        if($node->classIdentifier() == 'localbusiness')
+                        if($node->classIdentifier() == 'localbusiness' || $node->classIdentifier() == 'file_audio')
                         {
                             $collectionAttributes['GeoRSS']['description'] = substr(htmlspecialchars($outputHandler->outputText()),0,350).'...';
                         }else{
