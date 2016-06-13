@@ -11,3 +11,7 @@
 .xrowgis_popup_title{
     text-decoration:none;
 }
+
+.popup-audio-iframe {
+    background:url(../images/loader.gif) center center no-repeat;
+}
