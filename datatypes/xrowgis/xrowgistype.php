@@ -256,7 +256,7 @@ class xrowGIStype extends eZDataType
                         
                         $objectID = $originalContentObjectAttribute->attribute( 'data_int' );
                         $data_temp = self::updateRelAttributes($objectID);
-                        if (! is_null($gp_temp))
+                        if (! is_null($data_temp))
                         {
                             $data = $data_temp;
                         }
