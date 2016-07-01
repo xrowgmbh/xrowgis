@@ -207,7 +207,13 @@ class xrowGIStype extends eZDataType
             'state' => $state , 
             'country' => $country 
         ) );
-        $contentObjectAttribute->Content = $gp;
+        
+        if(! is_null($relatedObjectID)) {
+            $gp_temp = self::updateRelAttributes($relatedObjectID);
+            $contentObjectAttribute->Content = $gp_temp;
+        } else {
+            $contentObjectAttribute->Content = $gp;
+        }
         return true;
     }
 
@@ -247,6 +253,13 @@ class xrowGIStype extends eZDataType
                     {
                         $contentObjectAttribute->setAttribute( 'data_int', $originalContentObjectAttribute->attribute( 'data_int' ) );
                         $contentObjectAttribute->setAttribute( 'sort_key_int', $originalContentObjectAttribute->attribute( 'data_int' ) );
+                        
+                        $objectID = $originalContentObjectAttribute->attribute( 'data_int' );
+                        $data_temp = self::updateRelAttributes($objectID);
+                        if (! is_null($gp_temp))
+                        {
+                            $data = $data_temp;
+                        }
                     }
                     $data->setAttribute( 'contentobject_attribute_id', $contentObjectAttribute->attribute( 'id' ) );
                     $data->setAttribute( 'contentobject_attribute_version', $contentObjectAttribute->attribute( 'version' ) );
@@ -488,6 +501,22 @@ class xrowGIStype extends eZDataType
     function isIndexable()
     {
         return true;
+    }
+    /*
+      return the xrowgis content of the relations object
+    */
+    static function updateRelAttributes( $object_id )
+    {
+        $contentObject = eZContentObject::fetch( $object_id );
+        $datamap = $contentObject->fetchDataMap($contentObject->CurrentVersion, $contentObject->CurrentLanguage);
+        if (is_object($datamap['xrowgis']))
+        {
+            $gisObjectAttributeContent = self::objectAttributeContent($datamap['xrowgis']);
+            return $gisObjectAttributeContent;
+        } else {
+            return null;
+        }
+        
     }
 }
 
