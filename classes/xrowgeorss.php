@@ -155,12 +155,12 @@ class xrowGEORSS
                         {
                             $collectionAttributes['GeoRSS']['description'] = substr(htmlspecialchars($outputHandler->outputText()),0,350).'...';
                         }else{
-                            $collectionAttributes['GeoRSS']['description'] = htmlspecialchars($outputHandler->outputText());
+                            $collectionAttributes['GeoRSS']['description'] = htmlspecialchars(strip_tags($outputHandler->outputText(), '<p><ul><li><b>'));
                         }
                     }
                     else
                     {
-                        $collectionAttributes['GeoRSS']['description'] = htmlspecialchars( $dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'content' ) );
+                        $collectionAttributes['GeoRSS']['description'] = htmlspecialchars( strip_tags($dm[$this->cache['cache'][$node->classIdentifier()]['text']]->attribute( 'content' ), '<p><ul><li><b>') );
                     }
                     $Result = eZNodeviewfunctions::generateNodeViewData( $tpl, $node, $node->attribute( 'object' ), false, 'popup', false, array(), $collectionAttributes );
                     
