@@ -86,16 +86,31 @@ class xrowGIStype extends eZDataType
                     
                     $custom_conds = " AND contentclassattribute_id IN ({$content_class_ids})";
                     
-                    for ( $i = 0; $i < 4; $i ++ )
+                    for ( $i = 0; $i < 1000; $i ++ )
                     {
+                        $list = array();
                         if ( $i == 0 )
                         {
                             $coID = $contentObjectAttribute->attribute( 'contentobject_id' );
                         }
-                        
-                        $list = eZPersistentObject::fetchObjectList( eZContentObjectAttribute::definition(), null, array( 
-                            'sort_key_int' => $coID 
-                        ), null, null, true, false, null, null, $custom_conds );
+                        if($i != 0 && isset($ids) && is_array($ids) && count($ids) != 0) {
+                            $ids_uni_array = array_unique($ids);
+                            foreach ($ids_uni_array as $ids_item) {
+                                $list_temp = eZPersistentObject::fetchObjectList( eZContentObjectAttribute::definition(), null, array(
+                                        'sort_key_int' => $ids_item
+                                ), null, null, true, false, null, null, $custom_conds );
+                                if (is_array($list_temp) && count($list_temp) != 0) {
+                                    $list = array_merge($list,$list_temp);
+                                }
+                            }
+                        } else {
+                            $list = eZPersistentObject::fetchObjectList( eZContentObjectAttribute::definition(), null, array( 
+                                'sort_key_int' => $coID
+                            ), null, null, true, false, null, null, $custom_conds );
+                        }
+                        if(count($list) == 0) {
+                            break;
+                        }
                         $ids = array();
                         foreach ( $list as $item )
                         {
@@ -109,14 +124,11 @@ class xrowGIStype extends eZDataType
                             $GISCo->setAttribute( 'contentobject_attribute_id', $item->attribute( 'id' ) );
                             $GISCo->setAttribute( 'contentobject_attribute_version', $item->attribute( 'version' ) );
                             $GISCo->store();
-                            
-                            $coID = $item->attribute( 'contentobject_id' );
+                            array_push($ids,$item->attribute( 'contentobject_id' ));
+                           // $coID = $item->attribute( 'contentobject_id' );
                         }
-                    
                     }
-     #self::updateRelAttributes( $contentObjectAttribute );
                 }
-                
                 return eZInputValidator::STATE_ACCEPTED;
             }
         }
