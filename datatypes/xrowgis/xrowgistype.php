@@ -72,6 +72,7 @@ class xrowGIStype extends eZDataType
                     $contentObjectAttribute->setAttribute( 'sort_key_int', $relatedObjectID );
                     
                     $id_array = array();
+                    $check_array = array();
                     $content_class_ids = eZPersistentObject::fetchObjectList( eZContentClassAttribute::definition(), array( 
                         'id' 
                     ), array( 
@@ -86,9 +87,10 @@ class xrowGIStype extends eZDataType
                     
                     $custom_conds = " AND contentclassattribute_id IN ({$content_class_ids})";
                     
-                    for ( $i = 0; $i < 1000; $i ++ )
+                    for ( $i = 0; $i < 1000; $i++ )
                     {
                         $list = array();
+                        $check_array_unique = array_unique($check_array);
                         if ( $i == 0 )
                         {
                             $coID = $contentObjectAttribute->attribute( 'contentobject_id' );
@@ -96,17 +98,22 @@ class xrowGIStype extends eZDataType
                         if($i != 0 && isset($ids) && is_array($ids) && count($ids) != 0) {
                             $ids_uni_array = array_unique($ids);
                             foreach ($ids_uni_array as $ids_item) {
-                                $list_temp = eZPersistentObject::fetchObjectList( eZContentObjectAttribute::definition(), null, array(
-                                        'sort_key_int' => $ids_item
-                                ), null, null, true, false, null, null, $custom_conds );
-                                if (is_array($list_temp) && count($list_temp) != 0) {
-                                    $list = array_merge($list,$list_temp);
+                                if (! in_array($ids_item, $check_array_unique))
+                                {
+                                    $list_temp = eZPersistentObject::fetchObjectList( eZContentObjectAttribute::definition(), null, array(
+                                            'sort_key_int' => $ids_item
+                                    ), null, null, true, false, null, null, $custom_conds );
+                                    if (is_array($list_temp) && count($list_temp) != 0) {
+                                        $list = array_merge($list,$list_temp);
+                                    }
+                                    array_push($check_array, $ids_item);
                                 }
                             }
                         } else {
                             $list = eZPersistentObject::fetchObjectList( eZContentObjectAttribute::definition(), null, array( 
                                 'sort_key_int' => $coID
                             ), null, null, true, false, null, null, $custom_conds );
+                            array_push($check_array,$coID);
                         }
                         if(count($list) == 0) {
                             break;
@@ -129,6 +136,7 @@ class xrowGIStype extends eZDataType
                         }
                     }
                 }
+                unset($check_array_unique, $check_array);
                 return eZInputValidator::STATE_ACCEPTED;
             }
         }
