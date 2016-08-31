@@ -19,7 +19,7 @@
     {/if}
     </div>
     <div id="browse_progress" class="progress-indicator" style="display: none;"></div>
-    <table class="node_datalist" id="browse_box_prev">
+    <table class="node_datalist" id="browse_box_prev" {if and( is_set( $#object ), $#object.published )}data-objectid={$#object.id}{/if}>
         <thead>
         </thead>
         <tbody>

@@ -795,6 +795,11 @@ var eZOEPopupUtils = {
                    tr = document.createElement("tr"), td = document.createElement("td"), tag = document.createElement("input"), isImage = false;
                    tag.setAttribute('type', 'radio');
                    tag.setAttribute('name', 'selectembedobject');
+                   co_id = jQuery("table#browse_box_prev").attr("data-objectid");
+                   if (co_id == n.contentobject_id)
+                   {
+                       tag.setAttribute('disabled', 'true');
+                   }
                    tag.className = 'input_noborder';
                    tag.setAttribute('value', n.contentobject_id + '_' + n.node_id);
                    tag.setAttribute('title', ed.getLang('advanced.select') );
