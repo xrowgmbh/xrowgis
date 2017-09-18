@@ -52,9 +52,9 @@ class xrowGIStype extends eZDataType
             $relatedObjectID = $http->hasPostVariable( $base . '_xrowgis_data_object_relation_id_' . $contentObjectAttribute->attribute( 'id' ) ) ? $http->postVariable( $base . '_xrowgis_data_object_relation_id_' . $contentObjectAttribute->attribute( 'id' ) ) : null;
             
             if(! is_null($accurate)) {
-                $accurate = true;
-            } else {
                 $accurate = false;
+            } else {
+                $accurate = true;
             }
             
             if ( ( $contentObjectAttribute->validateIsRequired() && ( ! empty( $relatedObjectID ) || ( ! empty( $street ) && ! empty( $zip ) && ! empty( $city ) && ! empty( $state ) && ! empty( $latitude ) && ! empty( $longitude ) ) ) ) or ( ! $contentObjectAttribute->validateIsRequired() and ( empty( $street ) && empty( $zip ) && empty( $city ) && empty( $state ) && empty( $latitude ) && empty( $longitude ) ) or ( $street && $zip && $city && $state && $latitude && $longitude ) or $relatedObjectID ) )
@@ -225,10 +225,10 @@ class xrowGIStype extends eZDataType
         $relatedObjectID = $http->hasPostVariable( $base . '_xrowgis_data_object_relation_id_' . $contentObjectAttribute->attribute( 'id' ) ) ? $http->postVariable( $base . '_xrowgis_data_object_relation_id_' . $contentObjectAttribute->attribute( 'id' ) ) : null;
         if(! is_null($relatedObjectID)) {
             $gp_temp = $this->updateRelAttributes($relatedObjectID);
-            if(! is_null($gp_temp->accurate)) {
-                $accurate = true;
-            } else {
+            if(!is_null($gp_temp->accurate) && $gp_temp->accurate != 1) {
                 $accurate = false;
+            } else {
+                $accurate = true;
             }
         
             $gp_rel = new xrowGISPosition( array(
@@ -247,9 +247,9 @@ class xrowGIStype extends eZDataType
             $contentObjectAttribute->Content = $gp_rel;
         } else {
             if(! is_null($accurate)) {
-                $accurate = true;
-            } else {
                 $accurate = false;
+            } else {
+                $accurate = true;
             }
             $gp = new xrowGISPosition( array(
                     'contentobject_attribute_id' => $contentObjectAttribute->attribute( 'id' ) ,
