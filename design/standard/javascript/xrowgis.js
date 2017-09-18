@@ -77,7 +77,7 @@
             }
             $.ez('xrowGIS_page::updateMap', data, function(result) {
                 $('#mapContainer_'+data.attributeID).remove().fadeOut('slow');
-                $('.mapContainer_'+data.attributeID).append('<div id="mapContainer_'+data.attributeID+'" style="width: 400px; height: 400px;"></div>');
+                $('.mapContainer_'+data.attributeID).prepend('<div id="mapContainer_'+data.attributeID+'" style="width: 400px; height: 400px;"></div>');
                 var options = {
                     div : 'mapContainer_'+data.attributeID,
                     attributeID : data.attributeID,
@@ -153,6 +153,7 @@
             $('#xrowGIS-city-input_'+data.attributeID).val('');
             $('#xrowGIS-state-input_'+data.attributeID).val('');
             $('#xrowGIS-country-input_'+data.attributeID).val('');
+            $('#xrowGIS-accurate-input_'+data.attributeID).prop('checked', false);
         },
 
         setMapCenter : function (options) {

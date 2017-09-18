@@ -113,7 +113,7 @@ class xrowGISServerfunctions extends ezjscServerFunctions
         
         $data = $_POST;
         
-        $attributeID = $data['attributeID'];
+        // $attributeID = $data['attributeID'];
         
         $geocoder = GeoCoder::getActiveGeoCoder();
         $geocoder->setLonLat( $data['lon'], $data['lat'] );

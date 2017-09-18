@@ -13,6 +13,7 @@ CREATE TABLE  `ezxgis_position` (
   `city` varchar(255) default NULL,
   `state` varchar(255) default NULL,
   `country` varchar(255) default NULL,
+  `accurate` tinyint(1) default NULL,
    PRIMARY KEY (contentobject_attribute_id,contentobject_attribute_version)
 )  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -102,6 +103,12 @@ class xrowGISPosition extends eZPersistentObject
                     'datatype' => 'string' , 
                     'default' => '' , 
                     'required' => false 
+                ) ,
+                "accurate" => array(
+                    'name' => "accurate" ,
+                    'datatype' => 'boolean' ,
+                    'default' => null ,
+                    'required' => false
                 ) 
             ) , 
             "keys" => array( 

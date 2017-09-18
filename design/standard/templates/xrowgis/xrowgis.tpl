@@ -125,6 +125,12 @@
 </div>
     <div class="element mapContainer_{$attribute.id}" style="float: right;">
         <div id="mapContainer_{$attribute.id}" style="width: 400px; height: 400px;"></div>
+        <div id="accurate_{$attribute.id}" style = "width: 400px;">
+            <label>
+                <input id="xrowGIS-accurate-input_{$attribute.id}" type="checkbox" {if $attribute.content.accurate|eq(1)}checked{/if} name="ContentObjectAttribute_xrowgis_accurate_{$attribute.id}">
+                Kartenhinweis anzeigen: <p>"Die eingetragenen Adressdaten ermöglichen leider keine</p><p>ortsgenaue Darstellung auf der Karte."</p>
+            </label>
+        </div>
     </div>
     <div class="element recomContainer_{$attribute.id}" style="float: left;">
         <div id="recomContainer_{$attribute.id}" style="min-width: 200px; height: 150px; display:none;">

@@ -109,8 +109,18 @@ class OpenLayersGeoCoder extends GeoCoder
                         'long' => sprintf( "%s", $item->long_name ) 
                     );
                 }
-                $this->street = $retVal['route']['long'] . ' ' . $retVal['street_number']['long'];
-                $this->district = $retVal['sublocality']['long'];
+                if(isset($retVal['street_number'])) {
+                    $streetNum = $retVal['street_number']['long'];
+                }else{
+                    $streetNum = '';
+                }
+                if(isset($retVal['sublocality'])) {
+                    $subLocality = $retVal['sublocality']['long'];
+                }else{
+                    $subLocality= null;
+                }
+                $this->street = $retVal['route']['long'] . ' ' . $streetNum;
+                $this->district = $subLocality;
                 $this->zip = $retVal['postal_code']['long'];
                 $this->city = $retVal['locality']['long'];
                 $this->state = $retVal['administrative_area_level_1']['long'];
@@ -139,9 +149,18 @@ class OpenLayersGeoCoder extends GeoCoder
                     'long' => sprintf( "%s", $item->long_name ) 
                 );
             }
-            
-            $this->street = $retVal['route']['long'] . ' ' . $retVal['street_number']['long'];
-            $this->district = $retVal['sublocality']['long'];
+            if(isset($retVal['street_number'])) {
+                $streetNum = $retVal['street_number']['long'];
+            }else{
+                $streetNum = '';
+            }
+            if(isset($retVal['sublocality'])) {
+                $subLocality = $retVal['sublocality']['long'];
+            }else{
+                $subLocality= null;
+            }
+            $this->street = $retVal['route']['long'] . ' ' . $streetNum;
+            $this->district = $subLocality;
             $this->zip = $retVal['postal_code']['long'];
             $this->city = $retVal['locality']['long'];
             $this->state = $retVal['administrative_area_level_1']['long'];

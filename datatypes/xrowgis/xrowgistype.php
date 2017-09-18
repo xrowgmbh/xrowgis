@@ -48,7 +48,14 @@ class xrowGIStype extends eZDataType
             $city = $http->postVariable( $base . '_xrowgis_city_' . $contentObjectAttribute->attribute( 'id' ) );
             $state = $http->postVariable( $base . '_xrowgis_state_' . $contentObjectAttribute->attribute( 'id' ) );
             $country = $http->postVariable( $base . '_xrowgis_country_' . $contentObjectAttribute->attribute( 'id' ) );
+            $accurate = $http->postVariable( $base . '_xrowgis_accurate_' . $contentObjectAttribute->attribute( 'id' ) );
             $relatedObjectID = $http->hasPostVariable( $base . '_xrowgis_data_object_relation_id_' . $contentObjectAttribute->attribute( 'id' ) ) ? $http->postVariable( $base . '_xrowgis_data_object_relation_id_' . $contentObjectAttribute->attribute( 'id' ) ) : null;
+            
+            if(! is_null($accurate)) {
+                $accurate = true;
+            } else {
+                $accurate = false;
+            }
             
             if ( ( $contentObjectAttribute->validateIsRequired() && ( ! empty( $relatedObjectID ) || ( ! empty( $street ) && ! empty( $zip ) && ! empty( $city ) && ! empty( $state ) && ! empty( $latitude ) && ! empty( $longitude ) ) ) ) or ( ! $contentObjectAttribute->validateIsRequired() and ( empty( $street ) && empty( $zip ) && empty( $city ) && empty( $state ) && empty( $latitude ) && empty( $longitude ) ) or ( $street && $zip && $city && $state && $latitude && $longitude ) or $relatedObjectID ) )
             {
@@ -62,7 +69,8 @@ class xrowGIStype extends eZDataType
                     'district' => $district , 
                     'city' => $city , 
                     'state' => $state , 
-                    'country' => $country 
+                    'country' => $country,
+                    'accurate' => $accurate
                 ) );
                 
                 if ( $http->hasPostVariable( 'PublishButton' ) )
@@ -213,10 +221,15 @@ class xrowGIStype extends eZDataType
         $city = $http->postVariable( $base . '_xrowgis_city_' . $contentObjectAttribute->attribute( 'id' ) );
         $state = $http->postVariable( $base . '_xrowgis_state_' . $contentObjectAttribute->attribute( 'id' ) );
         $country = $http->postVariable( $base . '_xrowgis_country_' . $contentObjectAttribute->attribute( 'id' ) );
+        $accurate = $http->postVariable( $base . '_xrowgis_accurate_' . $contentObjectAttribute->attribute( 'id' ) );
         $relatedObjectID = $http->hasPostVariable( $base . '_xrowgis_data_object_relation_id_' . $contentObjectAttribute->attribute( 'id' ) ) ? $http->postVariable( $base . '_xrowgis_data_object_relation_id_' . $contentObjectAttribute->attribute( 'id' ) ) : null;
-        
         if(! is_null($relatedObjectID)) {
-            $gp_temp = self::updateRelAttributes($relatedObjectID);
+            $gp_temp = $this->updateRelAttributes($relatedObjectID);
+            if(! is_null($gp_temp->accurate)) {
+                $accurate = true;
+            } else {
+                $accurate = false;
+            }
         
             $gp_rel = new xrowGISPosition( array(
                     'contentobject_attribute_id' => $contentObjectAttribute->attribute( 'id' ) ,
@@ -228,10 +241,16 @@ class xrowGIStype extends eZDataType
                     'district' => $gp_temp->district ,
                     'city' => $gp_temp->city ,
                     'state' => $gp_temp->state ,
-                    'country' => $gp_temp->country
+                    'country' => $gp_temp->country,
+                    'accurate' => $accurate
             ) );
             $contentObjectAttribute->Content = $gp_rel;
         } else {
+            if(! is_null($accurate)) {
+                $accurate = true;
+            } else {
+                $accurate = false;
+            }
             $gp = new xrowGISPosition( array(
                     'contentobject_attribute_id' => $contentObjectAttribute->attribute( 'id' ) ,
                     'contentobject_attribute_version' => $contentObjectAttribute->attribute( 'version' ) ,
@@ -242,7 +261,8 @@ class xrowGIStype extends eZDataType
                     'district' => $district ,
                     'city' => $city ,
                     'state' => $state ,
-                    'country' => $country
+                    'country' => $country,
+                    'accurate' => $accurate
             ) );
             $contentObjectAttribute->Content = $gp;
         }
@@ -274,7 +294,8 @@ class xrowGIStype extends eZDataType
                         'district' => $data->attribute( 'district' ) , 
                         'city' => $data->attribute( 'city' ) , 
                         'state' => $data->attribute( 'state' ) , 
-                        'country' => $data->attribute( 'country' ) 
+                        'country' => $data->attribute( 'country' ),
+                        'accurate' => $data->attribute( 'accurate' )
                     ) );
                     $contentObjectAttribute->Content = $gp;
                 }
@@ -441,7 +462,7 @@ class xrowGIStype extends eZDataType
     /*!
      Returns the content.
     */
-    public static function objectAttributeContent( $contentObjectAttribute )
+    function objectAttributeContent( $contentObjectAttribute )
     {
         return xrowGISPosition::fetch( $contentObjectAttribute->attribute( "id" ), $contentObjectAttribute->attribute( "version" ) );
     }
@@ -451,7 +472,7 @@ class xrowGIStype extends eZDataType
     */
     function hasObjectAttributeContent( $contentObjectAttribute )
     {
-        $gis_info = self::objectAttributeContent( $contentObjectAttribute );
+        $gis_info = $this->objectAttributeContent( $contentObjectAttribute );
         if ( is_null( $gis_info ) || ( ( $gis_info->longitude == 0 || is_null( $gis_info->longitude ) ) && ( $gis_info->latitude == "0" || is_null( $gis_info->latitude ) ) ) )
         {
             return false;
@@ -531,13 +552,13 @@ class xrowGIStype extends eZDataType
     /*
      return the xrowgis content of the relations object
     */
-    static function updateRelAttributes( $object_id )
+    function updateRelAttributes( $object_id )
     {
         $contentObject = eZContentObject::fetch( $object_id );
         $datamap = $contentObject->fetchDataMap($contentObject->CurrentVersion, $contentObject->CurrentLanguage);
         if (is_object($datamap['xrowgis']))
         {
-            $gisObjectAttributeContent = self::objectAttributeContent($datamap['xrowgis']);
+            $gisObjectAttributeContent = $this->objectAttributeContent($datamap['xrowgis']);
             return $gisObjectAttributeContent;
         } else {
             return null;
