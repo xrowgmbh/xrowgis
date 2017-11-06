@@ -127,7 +127,7 @@
         <br />
         <div id="accurate_{$attribute.id}" style = "width: 400px;">
             <label>
-                <input id="xrowGIS-accurate-input_{$attribute.id}" type="checkbox" {if and($attribute.content.accurate|eq(0),$attribute.content.accurate|null()|not())}checked{/if} name="ContentObjectAttribute_xrowgis_accurate_{$attribute.id}">
+                <input id="xrowGIS-accurate-input_{$attribute.id}" type="checkbox" {if and($attribute.content.accurate|eq(0),$attribute.content.accurate|null()|not())}checked{/if} name="ContentObjectAttribute_xrowgis_accurate_{$attribute.id}" disabled>
                 Kartenhinweis anzeigen: <p>"Die eingetragenen Adressdaten ermöglichen leider keine</p><p>ortsgenaue Darstellung auf der Karte."</p>
             </label>
         </div>
