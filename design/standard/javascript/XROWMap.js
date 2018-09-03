@@ -120,7 +120,8 @@ XROWMap.prototype.init = function(element) {
             {
                 url = $(this).data().url;
             }
-            eval("this.layer = new OpenLayers.Layer." + $(this).data().service + "('" + $(this).data().layername + "', '" + url + "', " + stringify($(this).data().layerparams) + ", " + stringify($(this).data().layeroptions) + ");");
+            var layerNameString = $(this).data().layername.replace(/\n/g, " ");
+            eval("this.layer = new OpenLayers.Layer." + $(this).data().service + "('" + layerNameString + "', '" + url + "', " + stringify($(this).data().layerparams) + ", " + stringify($(this).data().layeroptions) + ");");
         }
         //some layers need a special treatment - place it here if needed
         switch($(this).data().service)
