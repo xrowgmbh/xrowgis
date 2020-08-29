@@ -433,9 +433,13 @@ class xrowGIStype extends eZDataType
 */
     function deleteStoredObjectAttribute( $contentObjectAttribute, $version = null )
     {
-        $gp = xrowGISPosition::fetch( $contentObjectAttribute->attribute( "id" ), $contentObjectAttribute->attribute( "version" ) );
-        if ( is_object( $gp ) )
+        try {
+          $gp = xrowGISPosition::fetch( $contentObjectAttribute->attribute( "id" ), $contentObjectAttribute->attribute( "version" ) );          
+          if ( is_object( $gp ) )
             $gp->remove();
+        } catch (\Throwable $th) {
+            return false;
+        }
     }
 
     /*!
